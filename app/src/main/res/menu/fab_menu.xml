@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/upload"
+        android:title="Upload CV"
+        android:icon="@drawable/uoload"
+        />
+    <item android:id="@+id/add"
+        android:title="Add player"
+        android:icon="@drawable/add_icon"
+        />
+</menu>

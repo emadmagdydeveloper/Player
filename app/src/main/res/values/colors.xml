@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0091EA</color>
+    <color name="colorPrimaryDark">#0091EA</color>
+    <color name="colorAccent">#000000</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="gray1">#E0E0E0</color>
+    <color name="gray2">#424242</color>
+    <color name="gray3">#EEEEEE</color>
+
+    <color name="tvColor">#AEEA00</color>
+    <color name="transparent">#00000000</color>
+
+</resources>

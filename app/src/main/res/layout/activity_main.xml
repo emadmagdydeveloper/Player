@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:scrollbars="none"
+    tools:context="com.alatheer.myplayer.Activities.LoginActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:id="@+id/root"
+        >
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/logo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/logo"
+            android:layout_marginTop="60dp"
+            >
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                app:fletPaddingBottom="8dp"
+                >
+                <EditText
+                    android:id="@+id/edt_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:backgroundTint="@color/white"
+                    android:hint="E-mail"
+                    android:textColorHint="@color/white"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/email_icon"
+                    android:inputType="textEmailAddress"
+                    android:textSize="13sp"
+                    />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                app:fletPaddingBottom="8dp"
+                >
+                <EditText
+                    android:id="@+id/edt_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:backgroundTint="@color/white"
+                    android:hint="Password"
+                    android:textColorHint="@color/white"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/pass_icon"
+                    android:inputType="textPassword"
+                    android:textSize="13sp"
+
+
+                    />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+
+            <Button
+                android:id="@+id/loginBtn"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/loginbtn_selector"
+                android:textColor="@color/colorPrimary"
+                android:text="Sign in"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:textSize="15sp"
+                android:textColor="#4FC3F7"
+                android:text="Skip"
+                />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+
+            >
+            <TextView
+                android:id="@+id/tv_signup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:text="Not a member ? Sign up now."
+                />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+</ScrollView>

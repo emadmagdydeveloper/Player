@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.alatheer.myplayer.Activities.PlayersActivity">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetLeft="0dp"
+            app:contentInsetEnd="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp"
+
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+                <ImageView
+                    android:id="@+id/back"
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/white_back"
+                    android:padding="5dp"
+
+                    android:layout_alignParentLeft="true"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textSize="17sp"
+                    android:textColor="@color/white"
+                    android:text="Players"
+                    />
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.alatheer.myplayer.Activities.HomeActivity"
+        tools:showIn="@layout/app_bar_home">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+
+      <!--  <ProgressBar
+            android:id="@+id/progBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            />-->
+    </FrameLayout>
+
+</LinearLayout>
