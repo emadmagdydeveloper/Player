@@ -1,6 +1,7 @@
 package com.alatheer.myplayer.Activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,14 +45,11 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private void UpdateUi(UserModel userModel) {
         try {
-            Picasso.with(this).load(userModel.getImage()).into(image_profile);
-            Picasso.with(this).load(userModel.getImage()).into(image);
-            tv_name.setText(userModel.getName());
-            tv_email.setText(userModel.getEmail());
-            tv_phone.setText(userModel.getPhone());
-
-            Log.e("email",userModel.getEmail()+"12212121");
-            Log.e("phone",userModel.getPhone()+"12212121");
+            Picasso.with(this).load(Uri.parse(Tags.imageUrl+userModel.getUser_photo())).into(image_profile);
+            Picasso.with(this).load(Uri.parse(Tags.imageUrl+userModel.getUser_photo())).into(image);
+            tv_name.setText(userModel.getUser_name());
+            tv_email.setText(userModel.getUser_email());
+            tv_phone.setText(userModel.getUser_phone());
 
 
             if (whoVisit.equals(Tags.me))

@@ -7,140 +7,55 @@ import java.io.Serializable;
  */
 
 public class PlayersModel implements Serializable {
-    private String id;
-    private int    image;
-    private String name;
-    private String age;
-    private String height;
-    private String weight;
-    private String code;
-    private String position;
-    private String speed;
-    private String attack;
-    private String defense;
-    private String finish;
-    private String kick;
+    private String player_id;
+    private String player_name;
+    private String player_age;
+    private String player_photo;
+    private String player_position;
+    private String player_tall;
+    private String player_weight;
+    private String player_vedio;
+    private String player_vedio_comment;
+    private String accademy_id_fk;
 
-    public PlayersModel() {
+
+    public String getPlayer_id() {
+        return player_id;
     }
 
-    public PlayersModel(String id, int image, String name, String age, String height, String weight, String code, String position, String speed, String attack, String defense, String finish, String kick) {
-        this.id = id;
-        this.image = image;
-        this.name = name;
-        this.age = age;
-        this.height = height;
-        this.weight = weight;
-        this.code = code;
-        this.position = position;
-        this.speed = speed;
-        this.attack = attack;
-        this.defense = defense;
-        this.finish = finish;
-        this.kick = kick;
+    public String getPlayer_name() {
+        return player_name;
     }
 
-    public String getId() {
-        return id;
+    public String getPlayer_age() {
+        return player_age;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getPlayer_photo() {
+        return player_photo;
     }
 
-    public int getImage() {
-        return image;
+    public String getPlayer_position() {
+        return player_position;
     }
 
-    public void setImage(int image) {
-        this.image = image;
+    public String getPlayer_tall() {
+        return player_tall;
     }
 
-    public String getName() {
-        return name;
+    public String getPlayer_weight() {
+        return player_weight;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getPlayer_vedio() {
+        return player_vedio;
     }
 
-    public String getAge() {
-        return age;
+    public String getPlayer_vedio_comment() {
+        return player_vedio_comment;
     }
 
-    public void setAge(String age) {
-        this.age = age;
-    }
-
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
-    }
-
-    public String getWeight() {
-        return weight;
-    }
-
-    public void setWeight(String weight) {
-        this.weight = weight;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    public String getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(String speed) {
-        this.speed = speed;
-    }
-
-    public String getAttack() {
-        return attack;
-    }
-
-    public void setAttack(String attack) {
-        this.attack = attack;
-    }
-
-    public String getDefense() {
-        return defense;
-    }
-
-    public void setDefense(String defense) {
-        this.defense = defense;
-    }
-
-    public String getFinish() {
-        return finish;
-    }
-
-    public void setFinish(String finish) {
-        this.finish = finish;
-    }
-
-    public String getKick() {
-        return kick;
-    }
-
-    public void setKick(String kick) {
-        this.kick = kick;
+    public String getAccademy_id_fk() {
+        return accademy_id_fk;
     }
 }

@@ -1,5 +1,7 @@
 package com.alatheer.myplayer.Activities;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -23,17 +25,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alatheer.myplayer.Adapters.AcademyAdapter;
 import com.alatheer.myplayer.Models.AcademyModel;
+import com.alatheer.myplayer.Models.ResponseModel;
 import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
+import com.alatheer.myplayer.Service.Preference;
 import com.alatheer.myplayer.Service.Tags;
+import com.alatheer.myplayer.Service.UserSingleTone;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -41,9 +48,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener ,UserSingleTone.Listener{
 
     private Toolbar toolbar;
     private DrawerLayout drawer;
@@ -52,85 +62,54 @@ public class HomeActivity extends AppCompatActivity
     private RecyclerView recView;
     private AcademyAdapter adapter;
     private RecyclerView.LayoutManager manager;
-    private List<AcademyModel> academyModelList,academyModelList2,academyModelList_search;
-    private ProgressBar progressBar;
+    private List<UserModel> academyModelList,main_academyModelList;
+    private ProgressBar progressBar,progSearch;
     private AutoCompleteTextView edt_search;
-    private AcademyModel academyModel;
     private UserModel userModel;
     private String user_type="";
     private CircleImageView image;
-    private TextView tv_name;
+    private TextView tv_name,no_data;
+    private Preference preference;
+    private UserSingleTone singleTone;
+    private String user_id="";
+    private LinearLayout no_result;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        preference = new Preference(this);
         initView();
         getDataFromIntent();
 
-    }
-
-    private void getDataFromIntent() {
-        Intent intent = getIntent();
-        if (intent !=null)
+        if (user_type.equals(Tags.user_type_user)||user_type.equals(Tags.user_type_academy))
         {
-            if (intent.hasExtra("user_data"))
-            {
-                user_type = Tags.user;
-                userModel = (UserModel) intent.getSerializableExtra("user_data");
-                Log.e("usertype",userModel.getUser_typ());
+            getData(userModel.getUser_id());
 
-                updateUserUi(userModel);
-            }else if (intent.hasExtra("ac_data"))
-            {
-                user_type = Tags.academy;
-                academyModel = (AcademyModel) intent.getSerializableExtra("ac_data");
-                Log.e("usertype",academyModel.getUser_type());
+        }else if (user_type.equals(Tags.user_type_skip))
+        {
+            getData("0");
 
-                updateAcademy_UI(academyModel);
-            }
-
-            Log.e("type",user_type);
         }
+
     }
-
-    private void updateAcademy_UI(AcademyModel academyModel) {
-        try
-        {
-            Picasso.with(this).load(academyModel.getImage()).into(image);
-            tv_name.setText(academyModel.getName());
-        }catch (NullPointerException e){}
-        catch (Exception e){}
-    }
-
-    private void updateUserUi(UserModel userModel) {
-        try
-        {
-            Picasso.with(this).load(userModel.getImage()).into(image);
-            tv_name.setText(userModel.getName());
-            Log.e("name1",userModel.getName());
-            Log.e("email1",userModel.getEmail());
-            Log.e("phone1",userModel.getPhone());
-
-        }catch (NullPointerException e){}
-        catch (Exception e){}
-    }
-
-    private void initView() 
+    private void initView()
     {
 
+        main_academyModelList = new ArrayList<>();
         academyModelList = new ArrayList<>();
-        academyModelList2 = new ArrayList<>();
-
-        academyModelList_search = new ArrayList<>();
-
+        no_result = findViewById(R.id.no_result);
+        no_data = findViewById(R.id.no_data);
         recView = findViewById(R.id.recView);
         manager = new LinearLayoutManager(this);
         recView.setLayoutManager(manager);
         adapter = new AcademyAdapter(academyModelList,this);
         recView.setAdapter(adapter);
         progressBar = findViewById(R.id.progBar);
+        progSearch = findViewById(R.id.progSearch);
         edt_search = findViewById(R.id.edt_search);
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        progSearch.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
 
         //////////////////////////////////////////////////////
         toolbar =  findViewById(R.id.toolbar);
@@ -155,6 +134,8 @@ public class HomeActivity extends AppCompatActivity
                     if (!TextUtils.isEmpty(edt_search.getText().toString()))
                     {
                         String query = edt_search.getText().toString();
+                        HideKeyBoard();
+
                         Search(query);
                     }
                 }
@@ -172,9 +153,8 @@ public class HomeActivity extends AppCompatActivity
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length()==0)
                 {
-                    //getData();
                     academyModelList.clear();
-                    academyModelList.addAll(academyModelList2);
+                    academyModelList.addAll(main_academyModelList);
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -187,79 +167,131 @@ public class HomeActivity extends AppCompatActivity
 
 
         /////////////////////////////////////////////////////////////
-        
-        
+
+
     }
-
-    private void Search(String query) {
-
-
-        academyModelList_search.clear();
-
-        for (AcademyModel academyModel :academyModelList2)
+    private void getDataFromIntent()
+    {
+        Intent intent = getIntent();
+        if (intent !=null)
         {
-            if (academyModel.getName().toLowerCase().equals(query.toLowerCase()))
+            if (intent.getStringExtra("user_type").equals(Tags.user_type_user)||intent.getStringExtra("user_type").equals(Tags.user_type_academy))
             {
 
-                academyModelList_search.add(academyModel);
+                singleTone = UserSingleTone.getInstance();
+                singleTone.getUserData(this);
             }
+            else if (intent.getStringExtra("user_type").equals(Tags.user_type_skip))
+            {
+                user_type=Tags.user_type_skip;
+                updateSkipUi();
+            }
+
+            Log.e("type",user_type);
         }
-
-        if (academyModelList_search.size()>0)
-        {
-            adapter.Clear(academyModelList_search);
-        }else
-            {
-                Toast.makeText(this, "No Results", Toast.LENGTH_SHORT).show();
-            }
-
-
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        getData();
-    }
-
-    private void getData() {
+    private void getData(String id)
+    {
         progressBar.setVisibility(View.GONE);
-        academyModelList.clear();
+        Tags.getService().getAcademies(id)
+                .enqueue(new Callback<List<UserModel>>() {
+                    @Override
+                    public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
+                        if (response.isSuccessful())
+                        {
+                            progressBar.setVisibility(View.GONE);
 
-        academyModelList2.add(new AcademyModel("1",R.drawable.ac1,"Academy1","01012345678","ac1@gmail.com","Egypt shebin","111111", Tags.academy));
-        academyModelList2.add(new AcademyModel("2",R.drawable.ac2,"Academy2","01102211221","ac2@gmail.com","Egypt shebin","222222", Tags.academy));
-        academyModelList2.add(new AcademyModel("3",R.drawable.ac1,"Academy3","01211212123","ac3@gmail.com","Egypt shebin","333333", Tags.academy));
-        academyModelList2.add(new AcademyModel("4",R.drawable.ac2,"Academy4","01000022525","ac4@gmail.com","Egypt shebin","444444", Tags.academy));
-        academyModelList2.add(new AcademyModel("5",R.drawable.ac1,"Academy5","01033333222","ac5@gmail.com","Egypt shebin","555555", Tags.academy));
-        academyModelList2.add(new AcademyModel("6",R.drawable.ac2,"Academy6","01011112222","ac6@gmail.com","Egypt shebin","666666", Tags.academy));
-        academyModelList2.add(new AcademyModel("7",R.drawable.ac1,"Academy7","01122122222","ac7@gmail.com","Egypt shebin","777777", Tags.academy));
+                            if (response.body().size()>0)
+                            {
+                                main_academyModelList.clear();
+                                academyModelList.clear();
+                                main_academyModelList.addAll(response.body());
+                                no_data.setVisibility(View.GONE);
+                                academyModelList.addAll(response.body());
+                                adapter.notifyDataSetChanged();
+                                no_result.setVisibility(View.GONE);
+                                progSearch.setVisibility(View.GONE);
 
-        if (user_type.equals(Tags.academy))
-        {
-            for (AcademyModel academyModel:academyModelList2)
-            {
-                if (academyModel.getId().equals(this.academyModel.getId()))
-                {
-                    continue;
-                }else
-                    {
-                        academyModelList.add(academyModel);
+                            }else
+                            {
+                                no_data.setVisibility(View.VISIBLE);
+                                no_result.setVisibility(View.GONE);
+                                progSearch.setVisibility(View.GONE);
+
+
+                            }
+                        }
                     }
-            }
-        }else
-            {
-                academyModelList.addAll(academyModelList2);
-            }
 
-
-        //academyModelList.addAll(academyModelList2);
-
-        adapter.notifyDataSetChanged();
+                    @Override
+                    public void onFailure(Call<List<UserModel>> call, Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(HomeActivity.this, "Something went haywire", Toast.LENGTH_SHORT).show();
+                        Log.e("Error",t.getMessage());
+                    }
+                });
 
     }
+    private void updateUserUi(UserModel userModel)
+    {
+        try
+        {
+            user_id = userModel.getUser_id();
+            user_type = userModel.getUser_type();
+            Picasso.with(this).load(userModel.getUser_photo()).into(image);
+            tv_name.setText(userModel.getUser_name());
 
+
+        }catch (NullPointerException e){}
+        catch (Exception e){}
+    }
+    private void updateSkipUi()
+    {
+        user_id = "0";
+        Picasso.with(this).load(R.drawable.user_profile).into(image);
+        tv_name.setText("Visitor");
+    }
+    private void Search(String query)
+    {
+        progSearch.setVisibility(View.VISIBLE);
+
+        Tags.getService().search(user_id,query).enqueue(new Callback<List<UserModel>>() {
+            @Override
+            public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
+                if (response.isSuccessful())
+                {
+                    if (response.body().size()>0)
+                    {
+                        academyModelList.clear();
+                        academyModelList.addAll(response.body());
+                        adapter.notifyDataSetChanged();
+                        progSearch.setVisibility(View.GONE);
+                        no_result.setVisibility(View.GONE);
+
+                    }else
+                        {
+                            progSearch.setVisibility(View.GONE);
+                            no_result.setVisibility(View.VISIBLE);
+
+                        }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UserModel>> call, Throwable t) {
+                Log.e("Error",t.getMessage());
+            }
+        });
+
+    }
+    private void HideKeyBoard()
+    {
+        InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        manager.hideSoftInputFromInputMethod(edt_search.getWindowToken(),0);
+    }
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
          drawer =  findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -267,40 +299,51 @@ public class HomeActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item)
+    {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.profile) {
-            if (user_type.equals(Tags.user))
+
+            if (user_type.equals(Tags.user_type_user))
             {
-                Log.e("name2",userModel.getName());
-                Log.e("email2",userModel.getEmail());
-                Log.e("phone2",userModel.getPhone());
                 Intent intent = new Intent(this,UserProfileActivity.class);
                 intent.putExtra("data",userModel);
                 intent.putExtra("who_visit",Tags.me);
                 startActivity(intent);
-            }else if (user_type.equals(Tags.academy))
+            }else if (user_type.equals(Tags.user_type_academy))
             {
                 Intent intent = new Intent(this,AcademyProfileActivity.class);
-                intent.putExtra("data",academyModel);
+                intent.putExtra("data",userModel);
                 intent.putExtra("who_visit",Tags.me);
-
                 startActivity(intent);
+            }else if (user_type.equals(Tags.user_type_skip))
+            {
+                Tags.CreateAlertDialog(this).show();
             }
+
+            
 
         } else if (id == R.id.about_app) {
 
+            Intent intent = new Intent(this,AboutAppActivity.class);
+            startActivity(intent);
         } else if (id == R.id.share) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_TEXT,"");
+            intent.putExtra(Intent.EXTRA_TITLE,"");
+            intent.putExtra(Intent.EXTRA_STREAM,R.drawable.logo);
+            startActivity(intent);
 
         } else if (id == R.id.contacts) {
+            Intent intent = new Intent(this,ContactUsActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.logout) {
+            Logout();
 
         }
 
@@ -308,13 +351,56 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    private void Logout()
+    {
+        ProgressDialog dialog = Tags.CreateProgressDialog(this, "Logout...");
+        dialog.show();
+        Tags.getService().logout().enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if (response.isSuccessful())
+                {
+                    if (response.body().getSuccess()==1)
+                    {
+                        dialog.dismiss();
 
-    public void setRecieveDataFromAdapter(AcademyModel academyModel)
+                        preference.CleareSharedPref();
+                        Intent intent = new Intent(HomeActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }else
+                        {
+                            dialog.dismiss();
+
+                            Toast.makeText(HomeActivity.this, "Failed try again later", Toast.LENGTH_SHORT).show();
+
+                        }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                dialog.dismiss();
+
+                Log.e("Error",t.getMessage());
+                Toast.makeText(HomeActivity.this, "Something went haywire", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+    public void setRecieveDataFromAdapter(UserModel academyModel)
     {
         Intent intent = new Intent(this,AcademyProfileActivity.class);
         intent.putExtra("data",academyModel);
         intent.putExtra("who_visit",Tags.visitor);
-
         startActivity(intent);
+    }
+
+    @Override
+    public void onSuccess(UserModel userModel) {
+        this.userModel  = userModel;
+        updateUserUi(userModel);
+
     }
 }

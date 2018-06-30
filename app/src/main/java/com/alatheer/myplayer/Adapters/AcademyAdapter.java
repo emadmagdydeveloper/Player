@@ -13,7 +13,9 @@ import android.widget.TextView;
 
 import com.alatheer.myplayer.Activities.HomeActivity;
 import com.alatheer.myplayer.Models.AcademyModel;
+import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
+import com.alatheer.myplayer.Service.Tags;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -23,11 +25,11 @@ import java.util.List;
  */
 
 public class AcademyAdapter extends RecyclerView.Adapter<AcademyAdapter.MyHolder> {
-    private List<AcademyModel>  academyModelList;
+    private List<UserModel>  academyModelList;
     private Context context;
     private HomeActivity activity;
 
-    public AcademyAdapter(List<AcademyModel> academyModelList, Context context) {
+    public AcademyAdapter(List<UserModel> academyModelList, Context context) {
         this.academyModelList = academyModelList;
         this.context = context;
         this.activity = (HomeActivity) context;
@@ -42,7 +44,7 @@ public class AcademyAdapter extends RecyclerView.Adapter<AcademyAdapter.MyHolder
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
-        AcademyModel academyModel = academyModelList.get(position);
+        UserModel academyModel = academyModelList.get(position);
         setAnimation(holder.itemView);
         holder.BindData(academyModel);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -72,18 +74,18 @@ public class AcademyAdapter extends RecyclerView.Adapter<AcademyAdapter.MyHolder
             tv_name = itemView.findViewById(R.id.tv_name);
             tv_phone = itemView.findViewById(R.id.tv_phone);
         }
-        private void BindData(AcademyModel academyModel)
+        private void BindData(UserModel academyModel)
         {
-            Picasso.with(context).load(academyModel.getImage()).into(image);
-            tv_name.setText(academyModel.getName());
-            tv_phone.setText(academyModel.getPhone());
+            Picasso.with(context).load(Uri.parse(Tags.imageUrl+academyModel.getUser_photo())).into(image);
+            tv_name.setText(academyModel.getUser_name());
+            tv_phone.setText(academyModel.getUser_phone());
         }
     }
 
-    public void Clear(List<AcademyModel> academyModelList)
+    /*public void Clear(List<AcademyModel> academyModelList)
     {
         this.academyModelList.clear();
         this.academyModelList.addAll(academyModelList);
         notifyDataSetChanged();
-    }
+    }*/
 }

@@ -7,80 +7,85 @@ import java.io.Serializable;
  */
 
 public class UserModel implements Serializable {
-    private String id;
-    private int image;
-    private String name;
-    private String email;
-    private String phone;
-    private String password;
-    private String user_typ;
+    private String user_id;
+    private String user_name;
+    private String user_pass;
+    private String user_type;
+    private String user_address;
+    private String user_phone;
+    private String user_email;
+    private String user_photo;
+    private String user_token_id;
+    private String user_google_lat;
+    private String user_google_long;
+    private String user_info;
+    private String user_facebook;
+    private String user_twitter;
+    private String user_instagram;
+    private int success;
 
-    public UserModel() {
+
+    public String getUser_id() {
+        return user_id;
     }
 
-    public UserModel(String id, int image, String name, String email, String phone, String password, String user_typ) {
-        this.id = id;
-        this.image = image;
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.password = password;
-        this.user_typ = user_typ;
+    public String getUser_name() {
+        return user_name;
     }
 
-    public String getId() {
-        return id;
+    public String getUser_pass() {
+        return user_pass;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getUser_type() {
+        return user_type;
     }
 
-    public int getImage() {
-        return image;
+    public String getUser_address() {
+        return user_address;
     }
 
-    public void setImage(int image) {
-        this.image = image;
+    public String getUser_phone() {
+        return user_phone;
     }
 
-    public String getName() {
-        return name;
+    public String getUser_email() {
+        return user_email;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getUser_photo() {
+        return user_photo;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUser_token_id() {
+        return user_token_id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getUser_google_lat() {
+        return user_google_lat;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getUser_google_long() {
+        return user_google_long;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public String getUser_info() {
+        return user_info;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUser_facebook() {
+        return user_facebook;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public String getUser_twitter() {
+        return user_twitter;
     }
 
-    public String getUser_typ() {
-        return user_typ;
+    public String getUser_instagram() {
+        return user_instagram;
     }
 
-    public void setUser_typ(String user_typ) {
-        this.user_typ = user_typ;
+    public int getSuccess() {
+        return success;
     }
 }

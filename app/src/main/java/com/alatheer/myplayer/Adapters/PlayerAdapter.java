@@ -1,6 +1,7 @@
 package com.alatheer.myplayer.Adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alatheer.myplayer.Activities.PlayersActivity;
 import com.alatheer.myplayer.Models.PlayersModel;
 import com.alatheer.myplayer.R;
+import com.alatheer.myplayer.Service.Tags;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -22,10 +25,12 @@ import java.util.List;
 public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyHolder> {
     private Context context;
     private List<PlayersModel> playersModelList;
+    private PlayersActivity activity;
 
     public PlayerAdapter(Context context, List<PlayersModel> playersModelList) {
         this.context = context;
         this.playersModelList = playersModelList;
+        this.activity = (PlayersActivity) context;
     }
 
     @NonNull
@@ -39,6 +44,12 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyHolder> 
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         PlayersModel playersModel = playersModelList.get(position);
         holder.BindData(playersModel);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.setPos(holder.getAdapterPosition());
+            }
+        });
     }
 
     @Override
@@ -62,12 +73,12 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyHolder> 
         private void BindData(PlayersModel playersModel)
         {
             try {
-                Picasso.with(context).load(playersModel.getImage()).into(image);
-                tv_name.setText(playersModel.getName());
-                tv_age.setText(playersModel.getAge());
-                tv_height.setText(playersModel.getHeight());
-                tv_weight.setText(playersModel.getWeight());
-                tv_code.setText(playersModel.getCode());
+                Picasso.with(context).load(Uri.parse(Tags.imageUrl+playersModel.getPlayer_photo())).into(image);
+                tv_name.setText(playersModel.getPlayer_name());
+                tv_age.setText(playersModel.getPlayer_age());
+                tv_height.setText(playersModel.getPlayer_tall());
+                tv_weight.setText(playersModel.getPlayer_weight());
+                tv_code.setText(playersModel.getPlayer_id());
             }catch (NullPointerException e){}
             catch (Exception e){}
         }

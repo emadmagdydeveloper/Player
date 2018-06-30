@@ -24,27 +24,47 @@
 
             </android.support.v7.widget.Toolbar>
 
-
-            <AutoCompleteTextView
-                android:id="@+id/edt_search"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
                 android:background="@drawable/search_bg"
                 android:layout_marginRight="15dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="8dp"
-                android:paddingRight="8dp"
-                android:paddingLeft="8dp"
-                android:drawableLeft="@drawable/search_icon"
-                android:imeOptions="actionSearch"
-                android:hint="Search for academy..."
-                android:textColorHint="@color/gray2"
-                android:drawablePadding="8dp"
-                android:textSize="13sp"
-                android:textColor="@color/black"
-                android:singleLine="true"
-                />
+                >
+                <AutoCompleteTextView
+                    android:id="@+id/edt_search"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.75"
+                    android:layout_height="60dp"
+                    android:paddingRight="8dp"
+                    android:paddingLeft="8dp"
+                    android:drawableLeft="@drawable/search_icon"
+                    android:imeOptions="actionSearch"
+                    android:hint="Search for academy..."
+                    android:textColorHint="@color/gray2"
+                    android:drawablePadding="8dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/black"
+                    android:singleLine="true"
+                    android:background="@color/transparent"
+                    android:layout_gravity="center"
+
+                    />
+                <ProgressBar
+                    android:id="@+id/progSearch"
+                    android:layout_width="0dp"
+                    android:layout_weight=".25"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    style="?android:progressBarStyleSmall"
+                    android:visibility="invisible"
+                    />
+            </LinearLayout>
+
 
         </LinearLayout>
 

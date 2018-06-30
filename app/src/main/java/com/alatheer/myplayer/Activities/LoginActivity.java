@@ -19,35 +19,41 @@ import android.widget.Toast;
 import com.alatheer.myplayer.Models.AcademyModel;
 import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
+import com.alatheer.myplayer.Service.Preference;
 import com.alatheer.myplayer.Service.Tags;
+import com.alatheer.myplayer.Service.UserSingleTone;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextView tv_signup;
+    private TextView tv_signup,skip;
     private EditText edt_email,edt_password;
     private Button loginBtn;
     private RelativeLayout root;
     private android.app.AlertDialog dialog;
-    private List<AcademyModel> academyModelList,accademy_result;
-    private List<UserModel> userModelList,userResult;
+    private UserSingleTone userSingleTone;
+    private Preference preference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        userSingleTone = UserSingleTone.getInstance();
+        preference = new Preference(this);
         initView();
+
+
     }
 
     private void initView() {
-        academyModelList = new ArrayList<>();
-        accademy_result = new ArrayList<>();
-        userResult = new ArrayList<>();
-
-        userModelList = new ArrayList<>();
+        skip = findViewById(R.id.skip);
         tv_signup = findViewById(R.id.tv_signup);
         edt_email = findViewById(R.id.edt_email);
         edt_password = findViewById(R.id.edt_password);
@@ -58,35 +64,41 @@ public class LoginActivity extends AppCompatActivity {
         {
             Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
             startActivity(intent);
+            finish();
         });
 
         loginBtn.setOnClickListener(view -> Signin());
+        skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
+                intent.putExtra("user_type",Tags.user_type_skip);
+                startActivity(intent);
+            }
+        });
 
         createAlertDialog();
-        createAcademy();
-        createUsers();
+
+        checkSession();
+
 
     }
 
-
-    private void createUsers() {
-
-        userModelList.add(new UserModel("1",R.drawable.u1,"u1","u1@gmail.com","011111111111","111111",Tags.user));
-        userModelList.add(new UserModel("2",R.drawable.u2,"u2","u2@gmail.com","022222222222","222222",Tags.user));
-        userModelList.add(new UserModel("3",R.drawable.u2,"u3","u3@gmail.com","033333333333","333333",Tags.user));
+    private void checkSession() {
+        String session = preference.getSession();
+        if (session!=null||!TextUtils.isEmpty(session))
+        {
+            if (session.equals(Tags.session_login))
+            {
+                UserModel userModel = preference.getUserData();
+                Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
+                intent.putExtra("user_type",userModel.getUser_type());
+                startActivity(intent);
+                finish();
+            }
+        }
     }
 
-    private void createAcademy() {
-
-        academyModelList.add(new AcademyModel("1",R.drawable.ac1,"Academy1","01012345678","ac1@gmail.com","Egypt shebin","111111", Tags.academy));
-        academyModelList.add(new AcademyModel("2",R.drawable.ac2,"Academy2","01102211221","ac2@gmail.com","Egypt shebin","222222", Tags.academy));
-        academyModelList.add(new AcademyModel("3",R.drawable.ac1,"Academy3","01211212123","ac3@gmail.com","Egypt shebin","333333", Tags.academy));
-        academyModelList.add(new AcademyModel("4",R.drawable.ac2,"Academy4","01000022525","ac4@gmail.com","Egypt shebin","444444", Tags.academy));
-        academyModelList.add(new AcademyModel("5",R.drawable.ac1,"Academy5","01033333222","ac5@gmail.com","Egypt shebin","555555", Tags.academy));
-        academyModelList.add(new AcademyModel("6",R.drawable.ac2,"Academy6","01011112222","ac6@gmail.com","Egypt shebin","666666", Tags.academy));
-        academyModelList.add(new AcademyModel("7",R.drawable.ac1,"Academy7","01122122222","ac7@gmail.com","Egypt shebin","777777", Tags.academy));
-
-    }
 
     private void createAlertDialog() {
         dialog = new SpotsDialog.Builder()
@@ -124,75 +136,45 @@ public class LoginActivity extends AppCompatActivity {
                 edt_email.setError(null);
                 edt_password.setError(null);
 
-                if (email.toLowerCase().startsWith("ac"))
-                {
-                    for (AcademyModel academyModel:academyModelList)
-                    {
-                        if (academyModel.getEmail().equals(email)&&academyModel.getPassword().equals(password))
-                        {
-                            accademy_result.add(academyModel);
-                            break;
-                        }
-                    }
-                    if (accademy_result.size()==1)
-                    {
+                dialog.dismiss();
 
-                        dialog.show();
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.dismiss();
-                                Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
-                                intent.putExtra("ac_data",accademy_result.get(0));
-                                startActivity(intent);
-                                finish();
-                            }
-                        },5000);
-                    }else if (accademy_result.size()==0)
-                    {
-                        Toast.makeText(this, "Check username or password", Toast.LENGTH_SHORT).show();
-                    }
-                }else if (email.toLowerCase().startsWith("u"))
-                {
-                    for (UserModel userModel:userModelList)
-                    {
-                        if (userModel.getEmail().equals(email)&& userModel.getPassword().equals(password))
-                        {
-                            userResult.add(userModel);
-                            break;
-                        }
-                    }
-
-                    if (userResult.size()==1)
-                    {
-                        dialog.show();
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.dismiss();
-                                Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
-                                intent.putExtra("user_data",userResult.get(0));
-                                startActivity(intent);
-                                finish();
-                            }
-                        },5000);
-                    }
-                    else if (userResult.size()==0)
-                    {
-                        Toast.makeText(this, "Check username or password", Toast.LENGTH_SHORT).show();
-
-                    }
-                }else
-                    {
-                        Toast.makeText(this, "Check username or password", Toast.LENGTH_SHORT).show();
-
-                    }
-
+                Login(email,password);
 
 
 
             }
+    }
+
+    private void Login(String email, String password) {
+        Tags.getService().login(email,password).enqueue(new Callback<UserModel>() {
+            @Override
+            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                if (response.isSuccessful())
+                {
+                    if (response.body().getSuccess()==1)
+                    {
+
+                        userSingleTone.setUserData(response.body());
+                        Gson gson = new Gson();
+                        String userData = gson.toJson(response.body());
+                        preference.CreateSharedPref(userData);
+
+                        Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
+                        intent.putExtra("user_type",response.body().getUser_type());
+                        startActivity(intent);
+                        finish();
+                    }else if (response.body().getSuccess()==0)
+                    {
+                        Toast.makeText(LoginActivity.this, "Failed try again later", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserModel> call, Throwable t) {
+                Log.e("Error",t.getMessage());
+            }
+        });
     }
 }

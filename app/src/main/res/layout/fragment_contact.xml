@@ -168,18 +168,23 @@
             android:layout_marginBottom="20dp"
             >
            <ImageView
+               android:id="@+id/fb"
                android:layout_width="45dp"
                android:layout_height="45dp"
                android:src="@drawable/facebook"
                android:padding="7dp"
                />
             <ImageView
+                android:id="@+id/in"
+
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:src="@drawable/instagram"
                 android:padding="7dp"
                 />
             <ImageView
+                android:id="@+id/tw"
+
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:src="@drawable/twitter"

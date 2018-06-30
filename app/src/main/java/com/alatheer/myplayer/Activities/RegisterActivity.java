@@ -1,5 +1,6 @@
 package com.alatheer.myplayer.Activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,9 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alatheer.myplayer.Adapters.PagerAdapter;
 import com.alatheer.myplayer.Fragments.Fragment_Email;
@@ -20,10 +23,20 @@ import com.alatheer.myplayer.Fragments.Fragment_Image;
 import com.alatheer.myplayer.Fragments.Fragment_Name;
 import com.alatheer.myplayer.Fragments.Fragment_Phone;
 import com.alatheer.myplayer.Models.RegisterModel;
+import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
+import com.alatheer.myplayer.Service.Preference;
+import com.alatheer.myplayer.Service.Tags;
+import com.alatheer.myplayer.Service.UserSingleTone;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -33,21 +46,30 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView title;
     private List<Fragment> fragmentList;
     private RegisterModel registerModel;
+    private AlertDialog dialog;
+    private UserSingleTone singleTone;
+    private Preference preference;
+    private ImageView back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         registerModel = RegisterModel.getInstance();
         initView();
-    }
+        createAlertDialog();
+        singleTone =UserSingleTone.getInstance();
+        preference = new Preference(this);
 
-    private void initView() {
+    }
+    private void initView()
+    {
         fragmentList = new ArrayList<>();
         pager = findViewById(R.id.pager);
         tab = findViewById(R.id.tab);
         nextBtn = findViewById(R.id.nextBtn);
         backBtn = findViewById(R.id.backBtn);
         title = findViewById(R.id.title);
+        back = findViewById(R.id.back);
         tab.setupWithViewPager(pager);
         ////////////////////////////////////////////////////////////
         fragmentList.add(Fragment_Image.getInstance());
@@ -274,12 +296,14 @@ public class RegisterActivity extends AppCompatActivity {
                                     fragment_email2.setShortPasswordError();
                                 }else
                                     {
-                                        SignUp(registerModel);
                                         Log.e("image",registerModel.getImage());
                                         Log.e("name",registerModel.getName());
                                         Log.e("phone",registerModel.getPhone());
                                         Log.e("email",registerModel.getEmail());
                                         Log.e("password",registerModel.getPassword());
+                                        dialog.show();
+                                        SignUp(registerModel);
+
 
                                     }
 
@@ -298,13 +322,75 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               Back();
+            }
+        });
     }
+    private void createAlertDialog()
+    {
+         dialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setCancelable(true)
+                .setMessage("Registering...")
+                .build();
+    }
+    private void SignUp(RegisterModel registerModel)
+    {
+        Call<UserModel> call = Tags.getService().registeration(registerModel.getName(), registerModel.getPassword(), registerModel.getPhone(), registerModel.getEmail(), registerModel.getImage());
+        call.enqueue(new Callback<UserModel>() {
+            @Override
+            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                if (response.isSuccessful())
+                {
+                    if (response.body().getSuccess()==1)
+                    {
+                        dialog.dismiss();
+                        singleTone.setUserData(response.body());
+                        Gson gson = new Gson();
+                        String userData = gson.toJson(response.body());
+                        preference.CreateSharedPref(userData);
+                        Intent intent = new Intent(RegisterActivity.this,HomeActivity.class);
+                        intent.putExtra("user_type",response.body().getUser_type());
+                        startActivity(intent);
+                        finish();
 
-    private void SignUp(RegisterModel registerModel) {
+                    }else if (response.body().getSuccess()==0)
+                    {
+                        dialog.dismiss();
+
+                        Toast.makeText(RegisterActivity.this, "Failed try again later", Toast.LENGTH_SHORT).show();
+                    }else if (response.body().getSuccess()==2)
+                    {
+                        Toast.makeText(RegisterActivity.this, "Email already exist", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserModel> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(RegisterActivity.this, "Something went haywire", Toast.LENGTH_SHORT).show();
+                Log.e("Error",t.getMessage());
+            }
+        });
 
     }
-
-
+    private void Back()
+    {
+        Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        Back();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

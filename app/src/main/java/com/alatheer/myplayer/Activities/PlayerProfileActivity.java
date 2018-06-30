@@ -1,19 +1,40 @@
 package com.alatheer.myplayer.Activities;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.VideoView;
 
+import com.alatheer.myplayer.Models.PlayersModel;
+import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
+import com.alatheer.myplayer.Service.Tags;
+import com.alatheer.myplayer.Service.UserSingleTone;
+import com.squareup.picasso.Picasso;
 
 public class PlayerProfileActivity extends AppCompatActivity {
-    private TextView tv_name,tv_age,tv_height,tv_weight,tv_code,tv_position,tv_speed,tv_attack,tv_defense,tv_finish,tv_kick;
+    private TextView tv_name,tv_age,tv_height,tv_weight,tv_code,tv_position,tv_comments;
     private ImageView image,back;
-    private LinearLayout watvch_video;
+    private PlayersModel playersModel;
+    private ImageView playBtn;
+    private ProgressBar progressBar;
+    private VideoView videoView;
+    private String url="";
+    private MediaController mediaController;
+    private Button updateBtn;
+    private String whoVisit="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,8 +48,71 @@ public class PlayerProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent!=null)
         {
-
+            playersModel = (PlayersModel) intent.getSerializableExtra("data");
+            updateUi(playersModel);
         }
+    }
+
+    private void updateUi(PlayersModel playersModel) {
+        try {
+            Picasso.with(this).load(Uri.parse(Tags.imageUrl+playersModel.getPlayer_photo())).into(image);
+            tv_name.setText(playersModel.getPlayer_name());
+            tv_age.setText(playersModel.getPlayer_age());
+            tv_height.setText(playersModel.getPlayer_tall());
+            tv_weight.setText(playersModel.getPlayer_weight());
+            tv_position.setText(playersModel.getPlayer_position());
+            tv_code.setText(playersModel.getPlayer_id());
+            tv_comments.setText(playersModel.getPlayer_vedio_comment());
+
+            if (whoVisit.equals(Tags.me))
+            {
+                updateBtn.setVisibility(View.VISIBLE);
+            }else if (whoVisit.equals(Tags.visitor))
+            {
+                updateBtn.setVisibility(View.INVISIBLE);
+
+            }
+
+
+
+
+
+
+            ////////////////////////////////////////
+            url = playersModel.getPlayer_vedio();
+            videoView.setVideoURI(Uri.parse(url));
+            mediaController = new android.widget.MediaController(this);
+            mediaController.setAnchorView(videoView);
+            videoView.setMediaController(mediaController);
+
+            playBtn.setOnClickListener(view -> {
+                if (TextUtils.isEmpty(url))
+                {
+                    Toast.makeText(PlayerProfileActivity.this, "No video available", Toast.LENGTH_SHORT).show();
+                }else
+                    {
+                        playBtn.setVisibility(View.GONE);
+                        videoView.start();
+                    }
+
+            });
+            videoView.setOnInfoListener((mediaPlayer, i, i1) -> {
+                if (MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START == i) {
+                    progressBar.setVisibility(View.GONE);
+                }
+                if (MediaPlayer.MEDIA_INFO_BUFFERING_START == i) {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+                if (MediaPlayer.MEDIA_INFO_BUFFERING_END == i) {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+                return false;
+            });
+            videoView.setOnCompletionListener(mediaPlayer -> playBtn.setVisibility(View.VISIBLE));
+
+
+        }catch (NullPointerException e){}
+        catch (Exception e){}
     }
 
     private void initView() {
@@ -38,20 +122,18 @@ public class PlayerProfileActivity extends AppCompatActivity {
         tv_weight = findViewById(R.id.tv_weight);
         tv_code = findViewById(R.id.tv_code);
         tv_position = findViewById(R.id.tv_position);
-        tv_speed = findViewById(R.id.tv_speed);
-        tv_attack = findViewById(R.id.tv_attack);
-        tv_defense = findViewById(R.id.tv_defense);
-        tv_finish = findViewById(R.id.tv_finish);
-        tv_kick = findViewById(R.id.tv_kick);
+        tv_comments = findViewById(R.id.tv_comments);
         image = findViewById(R.id.image);
         back = findViewById(R.id.back);
-        watvch_video = findViewById(R.id.watch_video);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        videoView = findViewById(R.id.videoView);
+        progressBar = findViewById(R.id.progBar);
+        playBtn = findViewById(R.id.playBtn);
+        updateBtn = findViewById(R.id.updateBtn);
+
+
+        back.setOnClickListener(view -> finish());
 
     }
+
+
 }

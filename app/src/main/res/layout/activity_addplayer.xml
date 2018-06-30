@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.alatheer.myplayer.Activities.AddPlayer1Activity"
+    tools:context="com.alatheer.myplayer.Activities.AddPlayerActivity"
     android:background="@color/colorPrimary"
     >
 
@@ -137,19 +137,62 @@
                 android:layout_marginTop="10dp"
                 />
             <EditText
-                android:id="@+id/edt_code"
+                android:id="@+id/edt_position"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:background="@drawable/edt_bg"
                 android:textColorHint="@color/gray2"
                 android:textSize="13sp"
-                android:hint="Academic code"
+                android:hint="Position"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:textColor="@color/black"
+                android:inputType="textPersonName"
+                android:layout_marginTop="10dp"
+                />
+            <EditText
+                android:id="@+id/edt_comment"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@drawable/edt_bg"
+                android:textColorHint="@color/gray2"
+                android:textSize="13sp"
+                android:hint="Video comment"
                 android:paddingRight="10dp"
                 android:paddingLeft="10dp"
                 android:textColor="@color/black"
                 android:inputType="text"
                 android:layout_marginTop="10dp"
                 />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:weightSum="1"
+                >
+                <TextView
+                    android:id="@+id/uploadBtn"
+                    android:layout_width="0dp"
+                    android:layout_weight=".3"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textSize="12sp"
+                    android:drawableLeft="@drawable/upload_icon"
+                    android:text="Upload video"
+                    android:textColor="@color/white"
+                    />
+                <TextView
+                    android:id="@+id/tv_video_path"
+                    android:layout_width="0dp"
+                    android:layout_weight=".7"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical|right"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center_vertical"
+
+                    />
+            </LinearLayout>
             <Button
                 android:id="@+id/nextBtn"
                 android:layout_width="150dp"
@@ -158,8 +201,9 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/loginbtn_selector"
                 android:textColor="@color/colorPrimary"
-                android:text="Next"
+                android:text="Add"
                 android:textSize="13sp"
+                android:layout_marginBottom="10dp"
                 />
         </LinearLayout>
     </ScrollView>

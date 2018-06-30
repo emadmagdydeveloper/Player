@@ -28,11 +28,14 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".Activities.UserProfileActivity" />
         <activity android:name=".Activities.AcademyProfileActivity" />
-        <activity android:name=".Activities.AddPlayer1Activity" />
+        <activity android:name=".Activities.AddPlayerActivity" />
         <activity android:name=".Activities.AddPlayer2Activity" />
         <activity android:name=".Activities.PlayersActivity" />
         <activity android:name=".Activities.PlayerProfileActivity" />
-        <activity android:name=".Activities.PlayerVideosActivity"></activity>
+        <activity android:name=".Activities.PlayerVideosActivity" />
+        <activity android:name=".Activities.ContactUsActivity" />
+        <activity android:name=".Activities.WebViewActivity" />
+        <activity android:name=".Activities.AboutAppActivity"></activity>
     </application>
 
 </manifest>

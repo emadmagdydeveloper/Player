@@ -61,12 +61,23 @@
 
         </android.support.v7.widget.RecyclerView>
 
-      <!--  <ProgressBar
+        <ProgressBar
             android:id="@+id/progBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            />-->
+            />
+        <TextView
+            android:id="@+id/no_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:textColor="@color/black"
+            android:text="There are no players to display"
+            android:visibility="gone"
+            />
     </FrameLayout>
 
 </LinearLayout>

@@ -90,6 +90,7 @@
                 android:text="Sign in"
                 />
             <TextView
+                android:id="@+id/skip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
