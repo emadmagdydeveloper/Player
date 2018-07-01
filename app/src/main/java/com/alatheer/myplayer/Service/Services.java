@@ -1,5 +1,6 @@
 package com.alatheer.myplayer.Service;
 
+import com.alatheer.myplayer.Models.AboutAppModel;
 import com.alatheer.myplayer.Models.ContactModel;
 import com.alatheer.myplayer.Models.PlayersModel;
 import com.alatheer.myplayer.Models.ResponseModel;
@@ -13,11 +14,6 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-
-/**
- * Created by elashry on 26/06/2018.
- */
-
 public interface Services {
 
     @FormUrlEncoded
@@ -37,7 +33,7 @@ public interface Services {
     Call<ContactModel> getContacts();
 
     @GET("ApiP/AboutUs")
-    Call<String> aboutApp();
+    Call<AboutAppModel> aboutApp();
 
     @GET("ApiP/AllAccademy/{user_id}")
     Call<List<UserModel>> getAcademies(@Path("user_id")String user_id);
@@ -63,5 +59,17 @@ public interface Services {
                                   @Field("player_vedio")String player_video
                                   );
 
+    @FormUrlEncoded
+    @POST("ApiP/AccademyCv/{user_id}")
+    Call<ResponseModel> UploadCV(@Path("user_id")String user_id,@Field("user_cv")String user_cv);
 
+    @FormUrlEncoded
+    @POST("ApiP/UpdateProfile/{user_id}")
+    Call<UserModel> updateProfile(@Path("user_id")String user_id,
+                                  @Field("user_name")String user_name,
+                                  @Field("user_pass")String user_pass,
+                                  @Field("user_phone")String user_phone,
+                                  @Field("user_email")String user_email,
+                                  @Field("user_photo")String user_photo
+                                  );
 }

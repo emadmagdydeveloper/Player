@@ -3,13 +3,13 @@ package com.alatheer.myplayer.Activities;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,10 +17,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.alatheer.myplayer.Models.PlayersModel;
-import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
 import com.alatheer.myplayer.Service.Tags;
-import com.alatheer.myplayer.Service.UserSingleTone;
 import com.squareup.picasso.Picasso;
 
 public class PlayerProfileActivity extends AppCompatActivity {
@@ -49,17 +47,23 @@ public class PlayerProfileActivity extends AppCompatActivity {
         if (intent!=null)
         {
             playersModel = (PlayersModel) intent.getSerializableExtra("data");
+            whoVisit = intent.getStringExtra("who_visit");
             updateUi(playersModel);
         }
     }
 
     private void updateUi(PlayersModel playersModel) {
-        try {
+
+            Log.e("who",whoVisit);
+            Log.e("img",playersModel.getPlayer_photo());
+            Log.e("name",playersModel.getPlayer_name());
+            Log.e("tall",playersModel.getPlayer_tall());
+
             Picasso.with(this).load(Uri.parse(Tags.imageUrl+playersModel.getPlayer_photo())).into(image);
             tv_name.setText(playersModel.getPlayer_name());
-            tv_age.setText(playersModel.getPlayer_age());
-            tv_height.setText(playersModel.getPlayer_tall());
-            tv_weight.setText(playersModel.getPlayer_weight());
+            tv_age.setText(playersModel.getPlayer_age()+" year");
+            tv_height.setText(playersModel.getPlayer_tall()+" cm");
+            tv_weight.setText(playersModel.getPlayer_weight()+" kg");
             tv_position.setText(playersModel.getPlayer_position());
             tv_code.setText(playersModel.getPlayer_id());
             tv_comments.setText(playersModel.getPlayer_vedio_comment());
@@ -80,10 +84,14 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
             ////////////////////////////////////////
             url = playersModel.getPlayer_vedio();
-            videoView.setVideoURI(Uri.parse(url));
-            mediaController = new android.widget.MediaController(this);
-            mediaController.setAnchorView(videoView);
-            videoView.setMediaController(mediaController);
+            if (!url.isEmpty()&&!url.equals("0"))
+            {
+                videoView.setVideoURI(Uri.parse(url));
+                mediaController = new android.widget.MediaController(this);
+                mediaController.setAnchorView(videoView);
+                videoView.setMediaController(mediaController);
+            }
+
 
             playBtn.setOnClickListener(view -> {
                 if (TextUtils.isEmpty(url))
@@ -111,8 +119,6 @@ public class PlayerProfileActivity extends AppCompatActivity {
             videoView.setOnCompletionListener(mediaPlayer -> playBtn.setVisibility(View.VISIBLE));
 
 
-        }catch (NullPointerException e){}
-        catch (Exception e){}
     }
 
     private void initView() {

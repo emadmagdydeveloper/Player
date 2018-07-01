@@ -21,7 +21,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ac1"
                 app:di_borderEnabled="false"
                 app:di_direction="left"
                 app:di_overlap="120dp"
@@ -60,7 +59,6 @@
                         android:textColor="@color/black"
                         android:textStyle="bold"
                         android:textSize="18dp"
-                        android:text="Academy sports"
                         android:gravity="center"
                         android:layout_centerHorizontal="true"
                         />
@@ -70,7 +68,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
-                        android:layout_marginRight="10dp"
+                        android:layout_marginRight="25dp"
                         >
 
                         <ImageView
@@ -104,7 +102,7 @@
             <TextView
                 android:id="@+id/tv_email"
                 android:layout_width="0dp"
-                android:layout_weight="1.7"
+                android:layout_weight="1.6"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical|left"
                 android:layout_marginLeft="10dp"
@@ -113,7 +111,6 @@
                 android:paddingBottom="5dp"
                 android:textColor="@color/black"
                 android:textSize="14sp"
-                android:text="e@gmail.com"
                 android:drawablePadding="10dp"
 
                 />
@@ -121,7 +118,7 @@
                 android:id="@+id/ll_edit_email"
 
                 android:layout_width="0dp"
-                android:layout_weight=".32"
+                android:layout_weight=".4"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:layout_gravity="center_vertical"
@@ -153,7 +150,7 @@
             <TextView
                 android:id="@+id/tv_phone"
                 android:layout_width="0dp"
-                android:layout_weight="1.7"
+                android:layout_weight="1.6"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical|left"
                 android:layout_marginLeft="10dp"
@@ -162,7 +159,6 @@
                 android:paddingBottom="5dp"
                 android:textColor="@color/black"
                 android:textSize="14sp"
-                android:text="01017357658"
                 android:drawablePadding="10dp"
 
                 />
@@ -170,7 +166,7 @@
                 android:id="@+id/ll_edit_phone"
 
                 android:layout_width="0dp"
-                android:layout_weight=".32"
+                android:layout_weight=".4"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:layout_gravity="center_vertical"

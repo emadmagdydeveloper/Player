@@ -5,36 +5,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alatheer.myplayer.Adapters.AcademyAdapter;
-import com.alatheer.myplayer.Models.AcademyModel;
 import com.alatheer.myplayer.Models.ResponseModel;
 import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
@@ -45,7 +40,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -192,7 +186,6 @@ public class HomeActivity extends AppCompatActivity
     }
     private void getData(String id)
     {
-        progressBar.setVisibility(View.GONE);
         Tags.getService().getAcademies(id)
                 .enqueue(new Callback<List<UserModel>>() {
                     @Override
@@ -270,6 +263,9 @@ public class HomeActivity extends AppCompatActivity
 
                     }else
                         {
+                            academyModelList.clear();
+                            academyModelList.addAll(response.body());
+                            adapter.notifyDataSetChanged();
                             progSearch.setVisibility(View.GONE);
                             no_result.setVisibility(View.VISIBLE);
 
@@ -333,9 +329,9 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.share) {
             Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_TEXT,"");
             intent.putExtra(Intent.EXTRA_TITLE,"");
-            intent.putExtra(Intent.EXTRA_STREAM,R.drawable.logo);
             startActivity(intent);
 
         } else if (id == R.id.contacts) {
@@ -343,7 +339,13 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.logout) {
-            Logout();
+            if (user_type.equals(Tags.user_type_skip)){
+                finish();
+            }else if (user_type.equals(Tags.user_type_academy)||user_type.equals(Tags.user_type_user))
+            {
+                Logout();
+
+            }
 
         }
 

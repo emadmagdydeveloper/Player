@@ -1,12 +1,12 @@
 package com.alatheer.myplayer.Activities;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.alatheer.myplayer.Models.ContactModel;
 import com.alatheer.myplayer.R;
 import com.alatheer.myplayer.Service.Tags;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +47,7 @@ public class ContactUsActivity extends AppCompatActivity {
         in = findViewById(R.id.in);
         submitBtn = findViewById(R.id.submitBtn);
         tv_phone = findViewById(R.id.tv_phone);
-        tv_email = findViewById(R.id.tv_name);
+        tv_email = findViewById(R.id.tv_email);
 
         back.setOnClickListener(view -> finish());
 
@@ -114,12 +116,30 @@ public class ContactUsActivity extends AppCompatActivity {
     private void sendMsg(String name, String msg, String email)
     {
 
-        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-        sendIntent.setType("plain/text");
-        sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
-        sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { email });
-        sendIntent.putExtra(Intent.EXTRA_SUBJECT, name);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, msg);
-        startActivity(sendIntent);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+        intent.putExtra(Intent.EXTRA_EMAIL,new String[]{email});
+        intent.putExtra(Intent.EXTRA_SUBJECT,name);
+        intent.putExtra(Intent.EXTRA_TEXT,msg);
+        PackageManager pm =getPackageManager();
+        List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
+        ResolveInfo best = null;
+        for(ResolveInfo info : matches)
+        {
+            if (info.activityInfo.packageName.endsWith(".gm") || info.activityInfo.name.toLowerCase().contains("gmail"))
+            {
+                best = info;
+
+            }
+        }
+
+        if (best != null)
+        {
+            intent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
+
+        }
+
+        startActivity(intent);
+
     }
 }

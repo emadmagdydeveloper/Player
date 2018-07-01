@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:text="Title"
+        android:textSize="14sp"
+        />
+    <EditText
+        android:id="@+id/edt_update"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:hint="title"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:background="@drawable/edt_contacts_bg"
+        android:textColor="@color/black"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        >
+        <Button
+            android:id="@+id/cancelBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@color/transparent"
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            android:text="dismiss"
+            />
+        <Button
+            android:id="@+id/updateBtn"
+
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@color/transparent"
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            android:text="update"
+            android:layout_marginLeft="10dp"
+            />
+
+    </LinearLayout>
+</LinearLayout>

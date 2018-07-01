@@ -91,7 +91,6 @@
                             android:layout_gravity="center_vertical"
                             android:textColor="@color/black"
                             android:textSize="13sp"
-                            android:text="01017357658"
                             android:layout_marginRight="10dp"
                             />
                     </LinearLayout>
@@ -117,7 +116,6 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="10dp"
-                            android:text="emad@gmail.com"
                             android:textColor="@color/black"
                             android:textSize="13sp" />
                     </LinearLayout>
