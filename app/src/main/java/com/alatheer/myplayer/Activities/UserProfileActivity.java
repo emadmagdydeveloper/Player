@@ -3,11 +3,14 @@ package com.alatheer.myplayer.Activities;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.util.TypedValue;
@@ -15,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +32,9 @@ import com.google.gson.Gson;
 import com.lamudi.phonefield.PhoneInputLayout;
 import com.santalu.diagonalimageview.DiagonalImageView;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -45,6 +52,8 @@ public class UserProfileActivity extends AppCompatActivity {
     private UserSingleTone userSingleTone;
     private Preference preference;
     private AlertDialog alertDialog;
+    private ImageView uploadImage;
+    private final int IMG_REQ = 889;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +76,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void UpdateUi(UserModel userModel) {
-        try {
+
             Picasso.with(this).load(Uri.parse(Tags.imageUrl+userModel.getUser_photo())).into(image_profile);
             Picasso.with(this).load(Uri.parse(Tags.imageUrl+userModel.getUser_photo())).into(image);
             tv_name.setText(userModel.getUser_name());
@@ -80,21 +89,24 @@ public class UserProfileActivity extends AppCompatActivity {
                 edit_name.setVisibility(View.VISIBLE);
                 edit_email.setVisibility(View.VISIBLE);
                 edit_phone.setVisibility(View.VISIBLE);
+                uploadImage.setVisibility(View.VISIBLE);
 
             }else if (whoVisit.equals(Tags.visitor))
             {
                 edit_name.setVisibility(View.INVISIBLE);
                 edit_email.setVisibility(View.INVISIBLE);
                 edit_phone.setVisibility(View.INVISIBLE);
+                uploadImage.setVisibility(View.INVISIBLE);
+
 
             }
 
-        }catch (NullPointerException e){}
-        catch (Exception e){}
+
     }
 
     private void initView() {
         image_profile = findViewById(R.id.image_profile);
+        uploadImage = findViewById(R.id.uploadImage);
         image = findViewById(R.id.image);
         tv_name = findViewById(R.id.tv_name);
         tv_email = findViewById(R.id.tv_email);
@@ -102,6 +114,12 @@ public class UserProfileActivity extends AppCompatActivity {
         edit_name = findViewById(R.id.ll_edit_name);
         edit_email = findViewById(R.id.ll_edit_email);
         edit_phone = findViewById(R.id.ll_edit_phone);
+
+        uploadImage.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent.createChooser(intent,"Choose Image"),IMG_REQ);
+        });
 
         edit_name.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,15 +133,14 @@ public class UserProfileActivity extends AppCompatActivity {
                 Button updateBtn = view1.findViewById(R.id.updateBtn);
                 Button cancelBtn = view1.findViewById(R.id.cancelBtn);
                 title.setText("Edit Name");
-                String name = edt_name.getText().toString();
                 updateBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (TextUtils.isEmpty(name))
+                        if (TextUtils.isEmpty(edt_name.getText().toString()))
                         {
                             edt_name.setError("name require");
                         }
-                        else if (name.equals(userModel.getUser_name()))
+                        else if (edt_name.getText().toString().equals(userModel.getUser_name()))
                         {
                             edt_name.setError(null);
                             Toast.makeText(UserProfileActivity.this, "No changes occur", Toast.LENGTH_SHORT).show();
@@ -131,7 +148,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         {
                             edt_name.setError(null);
                             alertDialog.dismiss();
-                            UpdateName(name);
+                            UpdateName(edt_name.getText().toString());
                         }
                     }
                 });
@@ -142,9 +159,13 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
                 alertDialog = new AlertDialog.Builder(UserProfileActivity.this)
+                        .setView(view1)
                         .setCancelable(true)
                         .create();
                 alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.show();
+
+
 
             }
         });
@@ -152,28 +173,28 @@ public class UserProfileActivity extends AppCompatActivity {
         edit_email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.e("ddd","ddd");
                 View view1 = LayoutInflater.from(UserProfileActivity.this).inflate(R.layout.edit_layout,null);
                 TextView title = view1.findViewById(R.id.tv_title);
                 EditText edt_email = view1.findViewById(R.id.edt_update);
                 edt_email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 edt_email.setHint("Email");
-                edt_email.setText(userModel.getUser_name());
+                edt_email.setText(userModel.getUser_email());
                 Button updateBtn = view1.findViewById(R.id.updateBtn);
                 Button cancelBtn = view1.findViewById(R.id.cancelBtn);
                 title.setText("Edit Email");
-                String email = edt_email.getText().toString();
                 updateBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (TextUtils.isEmpty(email))
+                        if (TextUtils.isEmpty(edt_email.getText().toString()))
                         {
                             edt_email.setError("email require");
                         }
-                        else if (email.equals(userModel.getUser_email()))
+                        else if (edt_email.getText().toString().equals(userModel.getUser_email()))
                         {
                             edt_email.setError(null);
                             Toast.makeText(UserProfileActivity.this, "No changes occur", Toast.LENGTH_SHORT).show();
-                        }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches())
+                        }else if (!Patterns.EMAIL_ADDRESS.matcher(edt_email.getText().toString()).matches())
                         {
                             edt_email.setError("invalid email");
 
@@ -182,7 +203,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         {
                             edt_email.setError(null);
                             alertDialog.dismiss();
-                            UpdateEmail(email);
+                            UpdateEmail(edt_email.getText().toString());
                         }
                     }
                 });
@@ -194,8 +215,10 @@ public class UserProfileActivity extends AppCompatActivity {
                 });
                 alertDialog = new AlertDialog.Builder(UserProfileActivity.this)
                         .setCancelable(true)
+                        .setView(view1)
                         .create();
                 alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.show();
 
             }
         });
@@ -212,11 +235,10 @@ public class UserProfileActivity extends AppCompatActivity {
                 Button updateBtn = view1.findViewById(R.id.updateBtn);
                 Button cancelBtn = view1.findViewById(R.id.cancelBtn);
                 title.setText("Edit Phone");
-                String phone = edt_phone.getPhoneNumber();
                 updateBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (TextUtils.isEmpty(phone))
+                        if (TextUtils.isEmpty(edt_phone.getPhoneNumber()))
                         {
                             edt_phone.getTextInputLayout().getEditText().setError("phone number require");
                         }
@@ -225,7 +247,7 @@ public class UserProfileActivity extends AppCompatActivity {
                             edt_phone.getTextInputLayout().getEditText().setError(null);
 
                             edt_phone.getTextInputLayout().getEditText().setError(" invalid phone number");
-                        }else if (phone.equals(userModel.getUser_phone()))
+                        }else if (edt_phone.getPhoneNumber().equals(userModel.getUser_phone()))
                         {
                             edt_phone.getTextInputLayout().getEditText().setError(null);
 
@@ -236,7 +258,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         {
                             edt_phone.getTextInputLayout().getEditText().setError(null);
                             alertDialog.dismiss();
-                            UpdatePhone(phone);
+                            UpdatePhone(edt_phone.getPhoneNumber());
                         }
                     }
                 });
@@ -248,9 +270,10 @@ public class UserProfileActivity extends AppCompatActivity {
                 });
                 alertDialog = new AlertDialog.Builder(UserProfileActivity.this)
                         .setCancelable(true)
+                        .setView(view1)
                         .create();
                 alertDialog.setCanceledOnTouchOutside(false);
-
+                alertDialog.show();
             }
         });
     }
@@ -259,7 +282,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
 
 
-    private void UpdateName(String name) {
+    private void UpdateName(String name)
+    {
         ProgressDialog dialog = Tags.CreateProgressDialog(this, "Updating name....");
         dialog.show();
         Tags.getService().updateProfile(userModel.getUser_id(),name,userModel.getUser_pass(),userModel.getUser_phone(),userModel.getUser_email(),"")
@@ -296,7 +320,8 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
     }
-    private void UpdatePhone(String phone) {
+    private void UpdatePhone(String phone)
+    {
         ProgressDialog dialog = Tags.CreateProgressDialog(UserProfileActivity.this, "Updating phone....");
         dialog.show();
         Tags.getService().updateProfile(userModel.getUser_id(),userModel.getUser_name(),userModel.getUser_pass(),phone,userModel.getUser_email(),"")
@@ -333,8 +358,8 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    private void UpdateEmail(String email) {
+    private void UpdateEmail(String email)
+    {
 
         ProgressDialog dialog = Tags.CreateProgressDialog(UserProfileActivity.this, "Updating email....");
         dialog.show();
@@ -373,5 +398,69 @@ public class UserProfileActivity extends AppCompatActivity {
                 });
     }
 
+    private String EncodeImage(Bitmap bitmap)
+    {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,90,outputStream);
+        byte [] bytes = outputStream.toByteArray();
+        return Base64.encodeToString(bytes,Base64.DEFAULT);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==IMG_REQ && resultCode==RESULT_OK&&data!=null)
+        {
+            Uri uri = data.getData();
+            try {
+                Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                String encodedImage = EncodeImage(bitmap);
+                UpdateImage(encodedImage);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void UpdateImage(String encodedImage)
+    {
+        ProgressDialog dialog = Tags.CreateProgressDialog(this, "Updating image...");
+        dialog.show();
+
+        Tags.getService().updateProfile(userModel.getUser_id(),userModel.getUser_name(),userModel.getUser_pass(),userModel.getUser_phone(),userModel.getUser_email(),encodedImage)
+                .enqueue(new Callback<UserModel>() {
+                    @Override
+                    public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                        if (response.isSuccessful())
+                        {
+                            if (response.body().getSuccess()==1)
+                            {
+                                dialog.dismiss();
+                                userModel = response.body();
+                                userSingleTone = UserSingleTone.getInstance();
+                                userSingleTone.setUserData(response.body());
+                                Gson gson= new Gson();
+                                String data = gson.toJson(response.body());
+                                preference = new Preference(UserProfileActivity.this);
+                                preference.UpdateSharedPref(data);
+                                UpdateUi(response.body());
+                                Toast.makeText(UserProfileActivity.this, "Image successfully updated", Toast.LENGTH_SHORT).show();
+
+
+                            }else if (response.body().getSuccess()==0)
+                            {
+                                dialog.dismiss();
+                                Toast.makeText(UserProfileActivity.this, "Failed try again later", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserModel> call, Throwable t) {
+                        Log.e("Error",t.getMessage());
+                        dialog.dismiss();
+                        Toast.makeText(UserProfileActivity.this, "Something went haywire", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }

@@ -34,18 +34,32 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 >
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/image"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
-                    app:civ_border_color="@color/colorPrimary"
-                    app:civ_border_width="3dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:src="@drawable/user_profile"
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
 
-                    />
+                    >
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/image"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        app:civ_border_color="@color/colorPrimary"
+                        app:civ_border_width="3dp"
+                        android:src="@drawable/user_profile"
+
+                        />
+                    <ImageView
+                        android:id="@+id/uploadImage"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/upd_img"
+                        android:src="@drawable/camera"
+                        android:padding="4dp"
+                        android:layout_gravity="bottom|right"
+                        />
+                </FrameLayout>
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -53,6 +67,7 @@
 
                     >
                     <TextView
+                        android:id="@+id/tv_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -73,10 +88,8 @@
 
                         <ImageView
                             android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:src="@drawable/edit_icon"
-                            android:padding="7dp"
-                            />
+                            android:layout_height="match_parent"
+                            android:src="@drawable/edit_icon" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

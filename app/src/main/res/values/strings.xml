@@ -6,4 +6,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="map_api_key">AIzaSyBtFSyNXCKpjzMH0lzvDWXGUb1aI6eCsBo</string>
 </resources>

@@ -7,9 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alatheer.myplayer.Activities.PlayerVideosActivity;
 import com.alatheer.myplayer.Activities.PlayersActivity;
 import com.alatheer.myplayer.Models.PlayersModel;
 import com.alatheer.myplayer.R;
@@ -22,21 +24,21 @@ import java.util.List;
  * Created by elashry on 28/06/2018.
  */
 
-public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyHolder> {
+public class PlayerVideosAdapter extends RecyclerView.Adapter<PlayerVideosAdapter.MyHolder> {
     private Context context;
     private List<PlayersModel> playersModelList;
-    private PlayersActivity activity;
+    private PlayerVideosActivity activity;
 
-    public PlayerAdapter(Context context, List<PlayersModel> playersModelList) {
+    public PlayerVideosAdapter(Context context, List<PlayersModel> playersModelList) {
         this.context = context;
         this.playersModelList = playersModelList;
-        this.activity = (PlayersActivity) context;
+        this.activity = (PlayerVideosActivity) context;
     }
 
     @NonNull
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view  = LayoutInflater.from(context).inflate(R.layout.player_item_row,parent,false);
+        View view  = LayoutInflater.from(context).inflate(R.layout.player_video_item_row,parent,false);
         return new MyHolder(view);
     }
 
@@ -44,12 +46,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyHolder> 
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         PlayersModel playersModel = playersModelList.get(position);
         holder.BindData(playersModel);
-        holder.itemView.setOnClickListener(view -> activity.setPos(holder.getAdapterPosition()));
-
-        holder.itemView.setOnLongClickListener(view -> {
-            activity.DeletePlayer(holder.getAdapterPosition());
-            return true;
-        });
+        holder.openVideo.setOnClickListener(view -> activity.changeVideo(holder.getAdapterPosition()));
     }
 
     @Override
@@ -59,26 +56,24 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyHolder> 
 
     public class MyHolder extends RecyclerView.ViewHolder {
         private ImageView image;
-        private TextView tv_name,tv_age,tv_height,tv_weight,tv_code;
+        private FrameLayout openVideo;
+        private TextView tv_comment;
         public MyHolder(View itemView) {
             super(itemView);
 
             image = itemView.findViewById(R.id.image);
-            tv_name = itemView.findViewById(R.id.tv_name);
-            tv_age = itemView.findViewById(R.id.tv_age);
-            tv_height = itemView.findViewById(R.id.tv_height);
-            tv_weight = itemView.findViewById(R.id.tv_weight);
-            tv_code = itemView.findViewById(R.id.tv_code);
+            openVideo = itemView.findViewById(R.id.openVideo);
+            tv_comment = itemView.findViewById(R.id.tv_comments);
+
+
+
         }
         private void BindData(PlayersModel playersModel)
         {
             try {
                 Picasso.with(context).load(Uri.parse(Tags.imageUrl+playersModel.getPlayer_photo())).into(image);
-                tv_name.setText(playersModel.getPlayer_name());
-                tv_age.setText(playersModel.getPlayer_age());
-                tv_height.setText(playersModel.getPlayer_tall());
-                tv_weight.setText(playersModel.getPlayer_weight());
-                tv_code.setText(playersModel.getPlayer_id());
+                tv_comment.setText(playersModel.getPlayer_age());
+
             }catch (NullPointerException e){}
             catch (Exception e){}
         }

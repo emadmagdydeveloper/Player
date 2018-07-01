@@ -136,7 +136,14 @@ public class PlayerProfileActivity extends AppCompatActivity {
         playBtn = findViewById(R.id.playBtn);
         updateBtn = findViewById(R.id.updateBtn);
 
-
+        updateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PlayerProfileActivity.this,UpdatePlayerProfileActivity.class);
+                intent.putExtra("data",playersModel);
+                startActivity(intent);
+            }
+        });
         back.setOnClickListener(view -> finish());
 
     }

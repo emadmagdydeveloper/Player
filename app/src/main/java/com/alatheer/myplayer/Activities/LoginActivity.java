@@ -91,6 +91,8 @@ public class LoginActivity extends AppCompatActivity {
             if (session.equals(Tags.session_login))
             {
                 UserModel userModel = preference.getUserData();
+                userSingleTone.setUserData(userModel);
+
                 Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
                 intent.putExtra("user_type",userModel.getUser_type());
                 startActivity(intent);

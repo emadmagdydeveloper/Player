@@ -125,23 +125,22 @@ public class FragmentAcademyContacts extends Fragment {
                 EditText edt_email = view1.findViewById(R.id.edt_update);
                 edt_email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 edt_email.setHint("Email");
-                edt_email.setText(academyModel.getUser_name());
+                edt_email.setText(academyModel.getUser_email());
                 Button updateBtn = view1.findViewById(R.id.updateBtn);
                 Button cancelBtn = view1.findViewById(R.id.cancelBtn);
                 title.setText("Edit Email");
-                String email = edt_email.getText().toString();
                 updateBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (TextUtils.isEmpty(email))
+                        if (TextUtils.isEmpty(edt_email.getText().toString()))
                         {
                             edt_email.setError("email require");
                         }
-                        else if (email.equals(academyModel.getUser_email()))
+                        else if (edt_email.getText().toString().equals(academyModel.getUser_email()))
                         {
                             edt_email.setError(null);
                             Toast.makeText(getActivity(), "No changes occur", Toast.LENGTH_SHORT).show();
-                        }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches())
+                        }else if (!Patterns.EMAIL_ADDRESS.matcher(edt_email.getText().toString()).matches())
                         {
                             edt_email.setError("invalid email");
 
@@ -150,7 +149,7 @@ public class FragmentAcademyContacts extends Fragment {
                         {
                             edt_email.setError(null);
                             alertDialog.dismiss();
-                            UpdateEmail(email);
+                            UpdateEmail(edt_email.getText().toString());
                         }
                     }
                 });
@@ -162,8 +161,10 @@ public class FragmentAcademyContacts extends Fragment {
                 });
                 alertDialog = new AlertDialog.Builder(getActivity())
                         .setCancelable(true)
+                        .setView(view1)
                         .create();
                 alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.show();
 
             }
         });
@@ -180,11 +181,10 @@ public class FragmentAcademyContacts extends Fragment {
                 Button updateBtn = view1.findViewById(R.id.updateBtn);
                 Button cancelBtn = view1.findViewById(R.id.cancelBtn);
                 title.setText("Edit Phone");
-                String phone = edt_phone.getPhoneNumber();
                 updateBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (TextUtils.isEmpty(phone))
+                        if (TextUtils.isEmpty(edt_phone.getPhoneNumber()))
                         {
                             edt_phone.getTextInputLayout().getEditText().setError("phone number require");
                         }
@@ -193,7 +193,7 @@ public class FragmentAcademyContacts extends Fragment {
                             edt_phone.getTextInputLayout().getEditText().setError(null);
 
                             edt_phone.getTextInputLayout().getEditText().setError(" invalid phone number");
-                        }else if (phone.equals(academyModel.getUser_phone()))
+                        }else if (edt_phone.getPhoneNumber().equals(academyModel.getUser_phone()))
                         {
                             edt_phone.getTextInputLayout().getEditText().setError(null);
 
@@ -204,7 +204,7 @@ public class FragmentAcademyContacts extends Fragment {
                         {
                             edt_phone.getTextInputLayout().getEditText().setError(null);
                             alertDialog.dismiss();
-                            UpdatePhone(phone);
+                            UpdatePhone(edt_phone.getPhoneNumber());
                         }
                     }
                 });
@@ -216,9 +216,10 @@ public class FragmentAcademyContacts extends Fragment {
                 });
                 alertDialog = new AlertDialog.Builder(getActivity())
                         .setCancelable(true)
+                        .setView(view1)
                         .create();
                 alertDialog.setCanceledOnTouchOutside(false);
-
+                alertDialog.show();
             }
         });
 /*

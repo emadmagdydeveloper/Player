@@ -64,7 +64,7 @@ public class AcademyProfileActivity extends AppCompatActivity {
     private String whoVisit ="";
     private LinearLayout watch_video;
     private String encodedCv="";
-    private ImageView uploadImage;
+    private ImageView uploadImage,map;
     private final int IMG_REQ = 523;
     private LinearLayout edit_name;
     private UserSingleTone userSingleTone;
@@ -103,18 +103,21 @@ public class AcademyProfileActivity extends AppCompatActivity {
                 fab.setVisibility(View.VISIBLE);
                 uploadImage.setVisibility(View.VISIBLE);
                 edit_name.setVisibility(View.VISIBLE);
+                map.setVisibility(View.GONE);
             }else if (whoVisit.equals(Tags.visitor))
             {
                 fab.setVisibility(View.GONE);
                 uploadImage.setVisibility(View.GONE);
                 edit_name.setVisibility(View.INVISIBLE);
+                map.setVisibility(View.VISIBLE);
 
 
             }
 
             watch_video.setOnClickListener(view -> {
                 Intent intent = new Intent(AcademyProfileActivity.this,PlayerVideosActivity.class);
-                intent.putExtra("id",academyModel.getUser_id());
+                intent.putExtra("data",academyModel);
+                intent.putExtra("who_visit",whoVisit);
                 startActivity(intent);
             });
         }catch (NullPointerException e){}
@@ -127,6 +130,7 @@ public class AcademyProfileActivity extends AppCompatActivity {
         image = findViewById(R.id.image);
         tv_name = findViewById(R.id.tv_name);
         edit_name = findViewById(R.id.edit_name);
+        map = findViewById(R.id.map);
         viewPlayer = findViewById(R.id.viewPlayer);
         watch_video = findViewById(R.id.watch_video);
         uploadImage = findViewById(R.id.uploadImage);
@@ -136,7 +140,7 @@ public class AcademyProfileActivity extends AppCompatActivity {
         properties.root = new File(DialogConfigs.DEFAULT_DIR);
         properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
         properties.offset = new File(DialogConfigs.DEFAULT_DIR);
-        properties.extensions = new String[]{"pdf","xls","xlsx","doc"};
+        properties.extensions = new String[]{"pdf"};
 
         dialog = new FilePickerDialog(AcademyProfileActivity.this,properties);
         dialog.setTitle("Select a File");
@@ -208,52 +212,58 @@ public class AcademyProfileActivity extends AppCompatActivity {
             startActivityForResult(intent.createChooser(intent,"Choose Image"),IMG_REQ);
         });
 
-        edit_name.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        edit_name.setOnClickListener(view -> {
 
-                View view1 = LayoutInflater.from(AcademyProfileActivity.this).inflate(R.layout.edit_layout,null);
-                TextView title = view1.findViewById(R.id.tv_title);
-                EditText edt_name = view1.findViewById(R.id.edt_update);
-                edt_name.setHint("Name");
-                edt_name.setText(academyModel.getUser_name());
-                Button updateBtn = view1.findViewById(R.id.updateBtn);
-                Button cancelBtn = view1.findViewById(R.id.cancelBtn);
-                title.setText("Edit Name");
-                String name = edt_name.getText().toString();
-                updateBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (TextUtils.isEmpty(name))
-                        {
-                            edt_name.setError("name require");
-                        }
-                        else if (name.equals(academyModel.getUser_name()))
+            View view1 = LayoutInflater.from(AcademyProfileActivity.this).inflate(R.layout.edit_layout,null);
+            TextView title = view1.findViewById(R.id.tv_title);
+            EditText edt_name = view1.findViewById(R.id.edt_update);
+            edt_name.setHint("Name");
+            edt_name.setText(academyModel.getUser_name());
+            Button updateBtn = view1.findViewById(R.id.updateBtn);
+            Button cancelBtn = view1.findViewById(R.id.cancelBtn);
+            title.setText("Edit Name");
+            updateBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (TextUtils.isEmpty(edt_name.getText().toString()))
+                    {
+                        edt_name.setError("name require");
+                    }
+                    else if (edt_name.getText().toString().equals(academyModel.getUser_name()))
+                    {
+                        edt_name.setError(null);
+                        Toast.makeText(AcademyProfileActivity.this, "No changes occur", Toast.LENGTH_SHORT).show();
+                    }else
                         {
                             edt_name.setError(null);
-                            Toast.makeText(AcademyProfileActivity.this, "No changes occur", Toast.LENGTH_SHORT).show();
-                        }else
-                            {
-                                edt_name.setError(null);
-                                alertDialog.dismiss();
-                                UpdateName(name);
-                            }
-                    }
-                });
-                cancelBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        alertDialog.dismiss();
-                    }
-                });
-                alertDialog = new AlertDialog.Builder(AcademyProfileActivity.this)
-                        .setCancelable(true)
-                        .create();
-                alertDialog.setCanceledOnTouchOutside(false);
+                            alertDialog.dismiss();
+                            UpdateName(edt_name.getText().toString());
+                        }
+                }
+            });
+            cancelBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    alertDialog.dismiss();
+                }
+            });
+            alertDialog = new AlertDialog.Builder(AcademyProfileActivity.this)
+                    .setCancelable(true)
+                    .setView(view1)
+                    .create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
 
-            }
+        });
+
+        map.setOnClickListener(view -> {
+            Intent intent = new Intent(AcademyProfileActivity.this,MapsActivity.class);
+            intent.putExtra("lat",academyModel.getUser_google_lat());
+            intent.putExtra("lng",academyModel.getUser_google_long());
+            startActivity(intent);
         });
     }
+
 
     private void UpdateName(String name) {
         ProgressDialog dialog = Tags.CreateProgressDialog(this, "Updating name....");

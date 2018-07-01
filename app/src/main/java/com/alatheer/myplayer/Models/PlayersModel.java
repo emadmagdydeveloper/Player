@@ -17,6 +17,10 @@ public class PlayersModel implements Serializable {
     private String player_vedio;
     private String player_vedio_comment;
     private String accademy_id_fk;
+    private String player_vedio_like;
+    private String player_vedio_dislike;
+    private String player_vedio_view;
+    private int  success;
 
 
     public String getPlayer_id() {
@@ -57,5 +61,21 @@ public class PlayersModel implements Serializable {
 
     public String getAccademy_id_fk() {
         return accademy_id_fk;
+    }
+
+    public String getPlayer_vedio_like() {
+        return player_vedio_like;
+    }
+
+    public String getPlayer_vedio_dislike() {
+        return player_vedio_dislike;
+    }
+
+    public String getPlayer_vedio_view() {
+        return player_vedio_view;
+    }
+
+    public int getSuccess() {
+        return success;
     }
 }

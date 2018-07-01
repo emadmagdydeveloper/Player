@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -147,6 +148,8 @@ public class HomeActivity extends AppCompatActivity
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length()==0)
                 {
+                    progSearch.setVisibility(View.GONE);
+                    no_result.setVisibility(View.GONE);
                     academyModelList.clear();
                     academyModelList.addAll(main_academyModelList);
                     adapter.notifyDataSetChanged();
@@ -227,16 +230,13 @@ public class HomeActivity extends AppCompatActivity
     }
     private void updateUserUi(UserModel userModel)
     {
-        try
-        {
+
             user_id = userModel.getUser_id();
             user_type = userModel.getUser_type();
-            Picasso.with(this).load(userModel.getUser_photo()).into(image);
+            Picasso.with(this).load(Uri.parse(Tags.imageUrl+userModel.getUser_photo())).into(image);
             tv_name.setText(userModel.getUser_name());
 
 
-        }catch (NullPointerException e){}
-        catch (Exception e){}
     }
     private void updateSkipUi()
     {

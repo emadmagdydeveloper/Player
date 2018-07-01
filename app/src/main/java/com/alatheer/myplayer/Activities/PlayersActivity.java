@@ -1,5 +1,7 @@
 package com.alatheer.myplayer.Activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -110,6 +112,7 @@ public class PlayersActivity extends AppCompatActivity {
 
 
 
+
     public void setPos(int pos)
     {
         PlayersModel playersModel = playersModelList.get(pos);
@@ -117,5 +120,23 @@ public class PlayersActivity extends AppCompatActivity {
         intent.putExtra("data",playersModel);
         intent.putExtra("who_visit",whoVisit);
         startActivity(intent);
+    }
+
+    public void DeletePlayer(int pos)
+    {
+        if (whoVisit.equals(Tags.me))
+        {
+            new AlertDialog.Builder(this)
+                    .setMessage("Delete player ?")
+                    .setPositiveButton("Delete", (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+                        playersModelList.remove(pos);
+                        adapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .create();
+        }
+
+
     }
 }

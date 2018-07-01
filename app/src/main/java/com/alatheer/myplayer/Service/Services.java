@@ -2,9 +2,12 @@ package com.alatheer.myplayer.Service;
 
 import com.alatheer.myplayer.Models.AboutAppModel;
 import com.alatheer.myplayer.Models.ContactModel;
+import com.alatheer.myplayer.Models.DirectionModel;
 import com.alatheer.myplayer.Models.PlayersModel;
 import com.alatheer.myplayer.Models.ResponseModel;
 import com.alatheer.myplayer.Models.UserModel;
+
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -14,6 +17,8 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Url;
+
 public interface Services {
 
     @FormUrlEncoded
@@ -72,4 +77,27 @@ public interface Services {
                                   @Field("user_email")String user_email,
                                   @Field("user_photo")String user_photo
                                   );
+
+
+    @FormUrlEncoded
+    @POST("ApiP/LikeVedio/{player_id}")
+    Call<ResponseModel> updateVideoInteraction(@Path("player_id")String player_id,@Field("count")String count);
+
+    @FormUrlEncoded
+    @POST("ApiP/UpdatePlayer/{player_id}")
+    Call<PlayersModel> updatePlayer(@Path("player_id") String player_id,
+                                    @Field("player_name") String player_name,
+                                    @Field("player_age") String player_age,
+                                    @Field("player_position") String player_position,
+                                    @Field("player_tall") String player_tall,
+                                    @Field("player_photo") String player_photo,
+                                    @Field("player_weight") String player_weight,
+                                    @Field("player_vedio") String player_vedio,
+                                    @Field("player_vedio_comment") String player_vedio_comment
+
+
+                                    );
+
+    @GET()
+    Call<DirectionModel> getDirection(@Url String url);
 }
