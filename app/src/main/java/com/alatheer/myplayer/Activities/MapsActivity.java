@@ -246,10 +246,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Log.e("polSize",polylineList.size()+"");
 
                                 int time = Integer.parseInt(routes.get(0).getLegs().get(0).getDurationObject().getValue())/60;
-                                tv_time.setText(String.valueOf(time));
+                                tv_time.setText(String.valueOf(time)+" min");
                                 tv_destination.setText(routes.get(0).getLegs().get(0).getEnd_address());
                                 int dis = Integer.parseInt(routes.get(0).getLegs().get(0).getDistanceObject().getValue().replace(",",""))/1000;
-                                tv_distance.setText(String.valueOf(dis));
+                                tv_distance.setText(String.valueOf(dis)+" km");
                                 polylineOptions = new PolylineOptions();
                                 polylineOptions.addAll(polylineList);
                                 polylineOptions.color(ContextCompat.getColor(MapsActivity.this,R.color.colorPrimary));

@@ -27,6 +27,7 @@
                     android:orientation="vertical"
                     android:layoutDirection="ltr"
                     android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
 
                     >
                     <LinearLayout
@@ -85,6 +86,7 @@
                             android:paddingRight="2dp"
                             android:text="fdsfsdfsdfsd"
                             android:gravity="center"
+                            android:singleLine="true"
                             />
                     </LinearLayout>
 
