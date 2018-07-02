@@ -126,9 +126,11 @@ public class AcademyProfileActivity extends AppCompatActivity {
             pdf.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(AcademyProfileActivity.this,WebViewActivity.class);
-                    intent.putExtra("url",Tags.file+cv);
+                    Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(Tags.file+cv));
                     startActivity(intent);
+                    /*Intent intent = new Intent(AcademyProfileActivity.this,WebViewActivity.class);
+                    intent.putExtra("url",Tags.file+cv);
+                    startActivity(intent);*/
                 }
             });
         }catch (NullPointerException e){}
