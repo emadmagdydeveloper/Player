@@ -22,6 +22,9 @@ public class UserModel implements Serializable {
     private String user_facebook;
     private String user_twitter;
     private String user_instagram;
+    private String user_cv;
+    private String user_vedio;
+    private String user_vedio_comment;
     private int success;
 
 
@@ -83,6 +86,18 @@ public class UserModel implements Serializable {
 
     public String getUser_instagram() {
         return user_instagram;
+    }
+
+    public String getUser_cv() {
+        return user_cv;
+    }
+
+    public String getUser_vedio() {
+        return user_vedio;
+    }
+
+    public String getUser_vedio_comment() {
+        return user_vedio_comment;
     }
 
     public int getSuccess() {

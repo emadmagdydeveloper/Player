@@ -64,12 +64,13 @@ public class AcademyProfileActivity extends AppCompatActivity {
     private String whoVisit ="";
     private LinearLayout watch_video;
     private String encodedCv="";
-    private ImageView uploadImage,map;
+    private ImageView uploadImage,map,pdf;
     private final int IMG_REQ = 523;
     private LinearLayout edit_name;
     private UserSingleTone userSingleTone;
     private Preference preference;
     private AlertDialog alertDialog;
+    private String cv="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,15 +114,51 @@ public class AcademyProfileActivity extends AppCompatActivity {
 
 
             }
-
             watch_video.setOnClickListener(view -> {
                 Intent intent = new Intent(AcademyProfileActivity.this,PlayerVideosActivity.class);
                 intent.putExtra("data",academyModel);
                 intent.putExtra("who_visit",whoVisit);
                 startActivity(intent);
+
+            });
+
+            getCV(academyModel.getUser_id());
+            pdf.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(AcademyProfileActivity.this,WebViewActivity.class);
+                    intent.putExtra("url",Tags.file+cv);
+                    startActivity(intent);
+                }
             });
         }catch (NullPointerException e){}
         catch (Exception e){}
+    }
+
+    private void getCV(String user_id) {
+        Tags.getService().showCV(user_id)
+                .enqueue(new Callback<UserModel>() {
+                    @Override
+                    public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                        if (response.isSuccessful())
+                        {
+                            if (!TextUtils.isEmpty(response.body().getUser_cv()))
+                            {
+                                pdf.setVisibility(View.VISIBLE);
+                                cv = response.body().getUser_cv();
+                            }else
+                                {
+                                    pdf.setVisibility(View.GONE);
+                                }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserModel> call, Throwable t) {
+                        Log.e("Error",t.getMessage());
+                        Toast.makeText(AcademyProfileActivity.this, "Something went haywire", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void initView() {
@@ -131,6 +168,7 @@ public class AcademyProfileActivity extends AppCompatActivity {
         tv_name = findViewById(R.id.tv_name);
         edit_name = findViewById(R.id.edit_name);
         map = findViewById(R.id.map);
+        pdf = findViewById(R.id.pdf);
         viewPlayer = findViewById(R.id.viewPlayer);
         watch_video = findViewById(R.id.watch_video);
         uploadImage = findViewById(R.id.uploadImage);
@@ -190,7 +228,7 @@ public class AcademyProfileActivity extends AppCompatActivity {
             infoBtn.setTextColor(ContextCompat.getColor(AcademyProfileActivity.this,R.color.white));
             infoBtn.setBackgroundResource(R.drawable.academy_selected_btn);
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.academy_fragment_container, FragmentAcademyInfo.getInstance()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.academy_fragment_container, FragmentAcademyInfo.getInstance(academyModel)).commit();
 
             contactBtn.setTextColor(ContextCompat.getColor(AcademyProfileActivity.this,R.color.colorPrimary));
             contactBtn.setBackgroundResource(R.drawable.academy_unselected_btn);
@@ -413,7 +451,6 @@ public class AcademyProfileActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<UserModel> call, Throwable t) {
-                        Log.e("Error",t.getMessage());
                         dialog.dismiss();
                         Toast.makeText(AcademyProfileActivity.this, "Something went haywire", Toast.LENGTH_SHORT).show();
                     }

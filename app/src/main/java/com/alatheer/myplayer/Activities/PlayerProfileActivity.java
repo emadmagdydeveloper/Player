@@ -86,7 +86,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
             url = playersModel.getPlayer_vedio();
             if (!url.isEmpty()&&!url.equals("0"))
             {
-                videoView.setVideoURI(Uri.parse(url));
+                videoView.setVideoURI(Uri.parse(Tags.vedioUrl+url));
                 mediaController = new android.widget.MediaController(this);
                 mediaController.setAnchorView(videoView);
                 videoView.setMediaController(mediaController);
@@ -112,7 +112,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
                 }
                 if (MediaPlayer.MEDIA_INFO_BUFFERING_END == i) {
-                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
                 }
                 return false;
             });
@@ -141,12 +141,20 @@ public class PlayerProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(PlayerProfileActivity.this,UpdatePlayerProfileActivity.class);
                 intent.putExtra("data",playersModel);
-                startActivity(intent);
+                startActivityForResult(intent,202);
             }
         });
         back.setOnClickListener(view -> finish());
 
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==202&& resultCode == RESULT_OK && data!=null)
+        {
+            playersModel = (PlayersModel) data.getSerializableExtra("data");
+            updateUi(playersModel);
+        }
+    }
 }

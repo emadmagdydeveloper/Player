@@ -1,16 +1,18 @@
 package com.alatheer.myplayer.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -53,6 +55,8 @@ public class AddPlayerActivity extends AppCompatActivity implements UserSingleTo
     private FilePickerDialog dialog;
     private TextView uploadBtn,tv_video_path;
     private String encoded_video="";
+    private String filePath="";
+    private Uri videoUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,25 +170,51 @@ public class AddPlayerActivity extends AppCompatActivity implements UserSingleTo
                 Toast.makeText(AddPlayerActivity.this, "Only one video allowed", Toast.LENGTH_SHORT).show();
             }else if (files.length==1)
                 {
-                    String path = files[0];
-                    String file_endPoint = path.substring(path.lastIndexOf("/"+1));
-                    tv_video_path.setText(file_endPoint);
-                    ProgressDialog dialog = Tags.CreateProgressDialog(AddPlayerActivity.this, "Uploading image....");
+                    filePath = files[0];
+                    File file = new File(filePath);
+                    tv_video_path.setText(file.getName());
+                    ProgressDialog dialog = Tags.CreateProgressDialog(AddPlayerActivity.this, "Uploading video....");
                     dialog.show();
-                    encoded_video = EncodeFile(path);
+                    encoded_video = EncodeFile(filePath);
                     dialog.dismiss();
 
-                    Log.e("path", path);
+                    Log.e("path", filePath);
                 }
 
         });
-        uploadBtn.setOnClickListener(view -> dialog.show());
+        uploadBtn.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("video/*");
+            startActivityForResult(intent.createChooser(intent,"video"),122);
+            //dialog.show()});
+        });
     }
 
     private void AddPlayer(String encodedImage, String name, String age, String weight, String height, String position, String comment, String encoded_video)
     {
         ProgressDialog dialog = Tags.CreateProgressDialog(this, "Adding player...");
         dialog.show();
+       /* File file = new File(getRealPathFromUri(this,videoUri));
+        Log.e("uri",getContentResolver().getType(videoUri));
+        RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(videoUri)),file);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file",file.getName(),filePart);
+        Tags.getService().uploadFile(part)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful())
+                        {
+                            dialog.dismiss();
+                            Toast.makeText(AddPlayerActivity.this, "success", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.e("Error",t.getMessage());
+                    }
+                });*/
+        //Log.e("file",file.getName());
         Tags.getService().AddPlayer(userModel.getUser_id(),name,age,position,height,encodedImage,weight,encoded_video)
                 .enqueue(new Callback<ResponseModel>() {
                     @Override
@@ -215,6 +245,20 @@ public class AddPlayerActivity extends AppCompatActivity implements UserSingleTo
                 });
     }
 
+    public String getRealPathFromUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
     private String EncodeFile(String path) {
         File file = new File(path);
         String enc_vid = "";
@@ -247,7 +291,12 @@ public class AddPlayerActivity extends AppCompatActivity implements UserSingleTo
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        }else if (requestCode== 122 && resultCode==RESULT_OK && data!=null)
+        {
+            videoUri = data.getData();
+
         }
+
     }
 
 

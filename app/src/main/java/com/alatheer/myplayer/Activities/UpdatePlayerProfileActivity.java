@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -17,14 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alatheer.myplayer.Models.PlayersModel;
-import com.alatheer.myplayer.Models.ResponseModel;
-import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
 import com.alatheer.myplayer.Service.Tags;
-import com.alatheer.myplayer.Service.UserSingleTone;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -65,8 +63,18 @@ public class UpdatePlayerProfileActivity extends AppCompatActivity {
         if (intent!=null)
         {
             playersModel = (PlayersModel) intent.getSerializableExtra("data");
-
+            updateUi(playersModel);
         }
+    }
+
+    private void updateUi(PlayersModel playersModel) {
+        Picasso.with(this).load(Uri.parse(Tags.imageUrl+playersModel.getPlayer_photo())).into(image);
+        edt_name.setText(playersModel.getPlayer_name());
+        edt_age.setText(playersModel.getPlayer_age());
+        edt_height.setText(playersModel.getPlayer_tall());
+        edt_weight.setText(playersModel.getPlayer_weight());
+        edt_position.setText(playersModel.getPlayer_position());
+        edt_comment.setText(playersModel.getPlayer_vedio_comment());
     }
 
     private void initView() {
@@ -137,16 +145,16 @@ public class UpdatePlayerProfileActivity extends AppCompatActivity {
                 edt_weight.setError(null);
                 edt_position.setError(null);
                 edt_comment.setError("Comment require");
-            }else if (bitmap ==null)
-            {
-                encodedImage="";
             }else{
                 edt_name.setError(null);
                 edt_age.setError(null);
                 edt_height.setError(null);
                 edt_weight.setError(null);
                 edt_comment.setError(null);
-
+                if (bitmap==null)
+                {
+                    encodedImage = "";
+                }
                 UpdatePlayer(encodedImage,name,age,weight,height,position,comment,encoded_video);
             }
         });
@@ -196,6 +204,9 @@ public class UpdatePlayerProfileActivity extends AppCompatActivity {
                             {
                                 dialog.dismiss();
                                 Toast.makeText(UpdatePlayerProfileActivity.this, "successfully updated", Toast.LENGTH_SHORT).show();
+                                Intent intent = getIntent();
+                                intent.putExtra("data",response.body());
+                                setResult(RESULT_OK,intent);
                                 finish();
                             }else if (response.body().getSuccess()==0)
                             {

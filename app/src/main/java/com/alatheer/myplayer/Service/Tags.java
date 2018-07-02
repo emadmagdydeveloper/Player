@@ -3,7 +3,6 @@ package com.alatheer.myplayer.Service;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +19,9 @@ import retrofit2.Retrofit;
 public class Tags {
     public static final String baseUrl = "http://engaz.semicolonsoft.com/";
     public static final String imageUrl="http://engaz.semicolonsoft.com/uploads/images/";
+    public static final String vedioUrl = "http://engaz.semicolonsoft.com/uploads/vedios/";
+    public static final String file = "http://engaz.semicolonsoft.com/uploads/files/";
+
     public static String baseUrlDir="https://maps.googleapis.com/";
     public static final String user_type_academy="1";
     public static final String user_type_user="2";
@@ -50,6 +52,7 @@ public class Tags {
         Services services = retrofit.create(Services.class);
         return services;
     }
+
 
     public static AlertDialog CreateAlertDialog(Context context)
     {

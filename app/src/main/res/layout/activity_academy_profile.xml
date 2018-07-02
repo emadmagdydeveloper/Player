@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -140,7 +144,6 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/watch_video"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -148,24 +151,44 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 >
-                <ImageView
-                    android:layout_width="35dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/video_player"
-                    android:layout_gravity="center_vertical"
-
-                    />
-                <TextView
+                <LinearLayout
+                    android:id="@+id/watch_video"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:textColor="@color/black"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:text="Watch videos"
+
+                    >
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/video_player"
+                        android:layout_gravity="center_vertical"
+
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:text="Watch videos"
+                        />
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/pdf"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/pdf"
+                    android:padding="5dp"
+                    android:layout_marginLeft="20dp"
+                    android:visibility="gone"
                     />
             </LinearLayout>
+
 
             <ImageView
                 android:id="@+id/map"
@@ -209,7 +232,7 @@
                         android:layout_weight=".7"
                         android:layout_height="40dp"
                         android:background="@drawable/academy_unselected_btn"
-                        android:text="Contacts"
+                        android:text="About"
                         android:textSize="13sp"
                         android:textColor="@color/colorPrimary"
                         android:layout_marginLeft="2dp"
@@ -231,19 +254,21 @@
 
 
         </LinearLayout>
-        <io.github.yavski.fabspeeddial.FabSpeedDial
-            android:id="@+id/fabsd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            app:fabGravity="bottom_end"
-            app:fabMenu="@menu/fab_menu"
-            app:miniFabBackgroundTint="@color/white"
-            app:miniFabDrawableTint="@color/white"
-            app:miniFabTitleTextColor="?attr/colorPrimaryDark"
-            app:fabBackgroundTint="@color/colorPrimary"
-            />
+
     </FrameLayout>
 
 
 </ScrollView>
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:id="@+id/fabsd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        app:fabGravity="bottom_end"
+        app:fabMenu="@menu/fab_menu"
+        app:miniFabBackgroundTint="@color/white"
+        app:miniFabDrawableTint="@color/white"
+        app:miniFabTitleTextColor="?attr/colorPrimaryDark"
+        app:fabBackgroundTint="@color/colorPrimary"
+        />
+</FrameLayout>

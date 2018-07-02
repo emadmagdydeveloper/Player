@@ -23,12 +23,23 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             />
+        <com.romainpiel.shimmer.ShimmerTextView
+            android:id="@+id/tv_shimmer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="Football Market"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/logo"
+
+            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_below="@+id/logo"
-            android:layout_marginTop="60dp"
+            android:layout_below="@+id/tv_shimmer"
+            android:layout_marginTop="65dp"
             >
             <com.wrapp.floatlabelededittext.FloatLabeledEditText
                 android:layout_width="match_parent"
@@ -50,6 +61,7 @@
                     android:drawableLeft="@drawable/email_icon"
                     android:inputType="textEmailAddress"
                     android:textSize="13sp"
+
                     />
             </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 

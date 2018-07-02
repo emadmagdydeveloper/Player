@@ -5,13 +5,14 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +29,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
@@ -37,10 +37,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.SquareCap;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +61,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker myMarker;
     private List<LatLng> polylineList;
     private PolylineOptions polylineOptions;
-    private TextView tv_distance,tv_time,tv_destination;
+    private TextView tv_distance,tv_time,tv_destination,tv_time_walk;
+    private ImageView back;
+    private final float zoom =11.5f;
 
 
     @Override
@@ -85,6 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tv_destination = findViewById(R.id.tv_destination);
         tv_distance = findViewById(R.id.tv_distance);
         tv_time = findViewById(R.id.tv_time);
+        tv_time_walk = findViewById(R.id.tv_time_walk);
+        back = findViewById(R.id.back);
+        back.setOnClickListener(view -> finish());
 
     }
 
@@ -213,7 +214,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude()))
         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         );
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),13f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),zoom));
         getDirection(myLocation.getLatitude(),myLocation.getLongitude(),distLat,distLng);
         Log.e("lat",location.getLatitude()+"");
         Log.e("lng",location.getLongitude()+"");
@@ -245,8 +246,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
                                 Log.e("polSize",polylineList.size()+"");
 
+                                getWalkTime(myLat,myLng,distLat,distLng);
                                 int time = Integer.parseInt(routes.get(0).getLegs().get(0).getDurationObject().getValue())/60;
-                                tv_time.setText(String.valueOf(time)+" min");
+                                if (time<59)
+                                {
+                                    tv_time.setText(String.valueOf(time)+" min");
+                                }else if (time>=60&&time<1440)
+                                {
+                                    int h = time/60;
+                                    int m = time%60;
+                                    if (m>0)
+                                    {
+                                        tv_time.setText(String.valueOf(h)+"H"+","+m);
+
+                                    }else
+                                    {
+                                        tv_time.setText(String.valueOf(h)+"H");
+
+                                    }
+
+                                }else if (time>=1440)
+                                {
+                                    int d = time/24;
+                                    tv_time.setText(String.valueOf(d)+"D");
+
+                                }
                                 tv_destination.setText(routes.get(0).getLegs().get(0).getEnd_address());
                                 int dis = Integer.parseInt(routes.get(0).getLegs().get(0).getDistanceObject().getValue().replace(",",""))/1000;
                                 tv_distance.setText(String.valueOf(dis)+" km");
@@ -275,6 +299,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
 
+    }
+
+    private void getWalkTime(double myLat,double myLng , double distLat,double distLng)
+    {
+        String url = "https://maps.googleapis.com/maps/api/directions/json?origin="+myLat+","+myLng+"&destination="+distLat+","+distLng+
+                "&mode=walking&transit_routing_preference=less_driving&key=AIzaSyBtFSyNXCKpjzMH0lzvDWXGUb1aI6eCsBo";
+
+        Tags.getServiceDir().getDirection(url)
+                .enqueue(new Callback<DirectionModel>() {
+                    @Override
+                    public void onResponse(Call<DirectionModel> call, Response<DirectionModel> response) {
+                        if (response.isSuccessful())
+                        {
+
+                            List<DirectionModel.RouteObject> routes = response.body().getRoutes();
+                            if (routes.size()>0)
+                            {
+
+
+                                int time = Integer.parseInt(routes.get(0).getLegs().get(0).getDurationObject().getValue())/60;
+
+                                if (time<59)
+                                {
+                                    tv_time_walk.setText(String.valueOf(time)+" min");
+                                }else if (time>=60&&time<1440)
+                                {
+                                    int h = time/60;
+                                    int m = time%60;
+                                    if (m>0)
+                                    {
+                                        tv_time_walk.setText(String.valueOf(h)+"H"+","+m);
+
+                                    }else
+                                        {
+                                            tv_time_walk.setText(String.valueOf(h)+"H");
+
+                                        }
+
+                                }else if (time>=1440)
+                                {
+                                    int d = time/24;
+                                    tv_time_walk.setText(String.valueOf(d)+"D");
+
+                                }
+
+                            }
+
+
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionModel> call, Throwable t) {
+                        Log.e("Error",t.getMessage());
+                        Toast.makeText(MapsActivity.this, "Can't get time", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private List decodePoly(String encoded) {

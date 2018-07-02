@@ -76,11 +76,12 @@ public class FragmentAcademyContacts extends Fragment {
         tv_email.setText(academyModel.getUser_email());
         tv_phone.setText(academyModel.getUser_phone());
         tv_address.setText(academyModel.getUser_address());
+        Log.e("who",who_visit);
         if (who_visit.equals(Tags.me))
         {
             ll_edit_phone.setVisibility(View.VISIBLE);
             ll_edit_email.setVisibility(View.VISIBLE);
-            ll_edit_address.setVisibility(View.VISIBLE);
+            ll_edit_address.setVisibility(View.INVISIBLE);
 
         }else if (who_visit.equals(Tags.visitor))
         {

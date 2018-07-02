@@ -29,6 +29,7 @@ public class Api {
             OkHttpClient client = new OkHttpClient.Builder()
                     .retryOnConnectionFailure(true)
                     .connectTimeout(1, TimeUnit.MINUTES)
+                    .writeTimeout(1,TimeUnit.HOURS)
                     .addInterceptor(interceptor)
                     .build();
             Gson gson = new GsonBuilder()

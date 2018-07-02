@@ -1,11 +1,10 @@
 package com.alatheer.myplayer.Activities;
 
 import android.content.Intent;
-import android.os.Handler;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
@@ -16,16 +15,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alatheer.myplayer.Models.AcademyModel;
 import com.alatheer.myplayer.Models.UserModel;
 import com.alatheer.myplayer.R;
 import com.alatheer.myplayer.Service.Preference;
 import com.alatheer.myplayer.Service.Tags;
 import com.alatheer.myplayer.Service.UserSingleTone;
 import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.romainpiel.shimmer.Shimmer;
+import com.romainpiel.shimmer.ShimmerTextView;
 
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
@@ -41,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
     private android.app.AlertDialog dialog;
     private UserSingleTone userSingleTone;
     private Preference preference;
+    private ShimmerTextView tv_shimmer;
+    private Shimmer shimmer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +58,13 @@ public class LoginActivity extends AppCompatActivity {
         edt_password = findViewById(R.id.edt_password);
         loginBtn = findViewById(R.id.loginBtn);
         root = findViewById(R.id.root);
-
+        tv_shimmer = findViewById(R.id.tv_shimmer);
+        shimmer = new Shimmer();
+        shimmer.setDuration(500);
+        shimmer.setStartDelay(300);
+        shimmer.setDirection(Shimmer.ANIMATION_DIRECTION_RTL);
+        tv_shimmer.setReflectionColor(ContextCompat.getColor(this,R.color.tvColor));
+        shimmer.start(tv_shimmer);
         tv_signup.setOnClickListener(view ->
         {
             Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
@@ -137,9 +142,7 @@ public class LoginActivity extends AppCompatActivity {
             {
                 edt_email.setError(null);
                 edt_password.setError(null);
-
-                dialog.dismiss();
-
+                dialog.show();
                 Login(email,password);
 
 
@@ -160,13 +163,15 @@ public class LoginActivity extends AppCompatActivity {
                         Gson gson = new Gson();
                         String userData = gson.toJson(response.body());
                         preference.CreateSharedPref(userData);
-
+                        dialog.dismiss();
                         Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
                         intent.putExtra("user_type",response.body().getUser_type());
                         startActivity(intent);
                         finish();
                     }else if (response.body().getSuccess()==0)
                     {
+                        dialog.dismiss();
+
                         Toast.makeText(LoginActivity.this, "Failed try again later", Toast.LENGTH_SHORT).show();
 
                     }
@@ -175,6 +180,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<UserModel> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(LoginActivity.this, "Something went haywire", Toast.LENGTH_SHORT).show();
+
                 Log.e("Error",t.getMessage());
             }
         });

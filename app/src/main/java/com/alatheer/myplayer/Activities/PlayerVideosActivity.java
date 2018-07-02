@@ -1,6 +1,7 @@
 package com.alatheer.myplayer.Activities;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,7 +39,7 @@ public class PlayerVideosActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager manager;
     private RecyclerView.Adapter adapter;
     private String whoVisit="";
-    private LinearLayout like,dislike;
+    private LinearLayout like,dislike,ll_view;
     private TextView tv_like,tv_dislike,tv_view;
     private UserModel userModel;
     private TextView no_data;
@@ -67,13 +68,26 @@ public class PlayerVideosActivity extends AppCompatActivity {
         recView.setAdapter(adapter);
         recView.setHasFixedSize(true);
         like = findViewById(R.id.like);
+        ll_view = findViewById(R.id.ll_view);
         dislike = findViewById(R.id.dislike);
         tv_like = findViewById(R.id.tv_like);
         tv_dislike = findViewById(R.id.tv_dislike);
         tv_view = findViewById(R.id.tv_view);
         no_data = findViewById(R.id.no_data);
+        back.setOnClickListener(view -> finish());
 
-
+        videoView.setOnInfoListener((mediaPlayer, i, i1) -> {
+            if (MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START == i) {
+                video_progress.setVisibility(View.GONE);
+            }
+            if (MediaPlayer.MEDIA_INFO_BUFFERING_START == i) {
+                video_progress.setVisibility(View.VISIBLE);
+            }
+            if (MediaPlayer.MEDIA_INFO_BUFFERING_END == i) {
+                video_progress.setVisibility(View.GONE);
+            }
+            return false;
+        });
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,26 +149,48 @@ public class PlayerVideosActivity extends AppCompatActivity {
                                 playersModelList.clear();
                                 playersModelList.addAll(response.body());
                                 adapter.notifyDataSetChanged();
-                                playBtn.setEnabled(false);
-                                video_progress.setVisibility(View.GONE);
-                                changeVideo(0);
+                                playBtn.setEnabled(true);
+                                //changeVideo(0);
+                                tv_like.setText(playersModelList.get(0).getPlayer_vedio_like());
+                                tv_dislike.setText(playersModelList.get(0).getPlayer_vedio_dislike());
+                                tv_view.setText(playersModelList.get(0).getPlayer_vedio_view());
                                 updateVideoInteraction(playersModelList.get(0).getPlayer_id(),Tags.viewer);
                                 currVideoPos=0;
-                                tv_like.setVisibility(View.VISIBLE);
-                                tv_dislike.setVisibility(View.VISIBLE);
-                                tv_view.setVisibility(View.VISIBLE);
-                                like.setVisibility(View.VISIBLE);
-                                dislike.setVisibility(View.VISIBLE);
+                                if (!TextUtils.isEmpty(playersModelList.get(0).getPlayer_vedio())&&!playersModelList.get(0).getPlayer_vedio().equals("0"))
+                                {
+                                    playBtn.setVisibility(View.GONE);
+                                    video_progress.setVisibility(View.VISIBLE);
+                                    videoView.setVideoURI(Uri.parse(Tags.vedioUrl+playersModelList.get(0).getPlayer_vedio()));
+                                    videoView.start();
+                                    tv_like.setVisibility(View.VISIBLE);
+                                    tv_dislike.setVisibility(View.VISIBLE);
+                                    tv_view.setVisibility(View.VISIBLE);
+                                    like.setVisibility(View.VISIBLE);
+                                    dislike.setVisibility(View.VISIBLE);
+                                    ll_view.setVisibility(View.VISIBLE);
+                                }else
+                                    {
+                                        playBtn.setVisibility(View.VISIBLE);
+                                        video_progress.setVisibility(View.GONE);
+                                        tv_like.setVisibility(View.GONE);
+                                        tv_dislike.setVisibility(View.GONE);
+                                        tv_view.setVisibility(View.GONE);
+                                        like.setVisibility(View.GONE);
+                                        dislike.setVisibility(View.GONE);
+                                        ll_view.setVisibility(View.GONE);
+                                    }
+
 
                             }else
                             {
-                                playBtn.setEnabled(true);
+                                playBtn.setEnabled(false);
                                 no_data.setVisibility(View.VISIBLE);
                                 tv_like.setVisibility(View.INVISIBLE);
                                 tv_dislike.setVisibility(View.INVISIBLE);
                                 tv_view.setVisibility(View.INVISIBLE);
                                 like.setVisibility(View.INVISIBLE);
                                 dislike.setVisibility(View.INVISIBLE);
+                                ll_view.setVisibility(View.GONE);
 
                             }
                         }
@@ -171,44 +207,46 @@ public class PlayerVideosActivity extends AppCompatActivity {
 
     public void changeVideo(int pos)
     {
-        if (pos==-1)
+        if (pos!=currVideoPos)
         {
-            tv_like.setVisibility(View.INVISIBLE);
+            playBtn.setVisibility(View.GONE);
+            currVideoPos = pos;
+            tv_like.setText(playersModelList.get(pos).getPlayer_vedio_like());
+            tv_dislike.setText(playersModelList.get(pos).getPlayer_vedio_dislike());
+            tv_view.setText(playersModelList.get(pos).getPlayer_vedio_view());
+            //playBtn.setEnabled(true);
+            if (videoView.isPlaying())
+            {
+                videoView.stopPlayback();
+                if (TextUtils.isEmpty(playersModelList.get(pos).getPlayer_vedio()))
+                {
+                    Toast.makeText(this, "This video not available", Toast.LENGTH_SHORT).show();
+                }else
+                {
+                    video_progress.setVisibility(View.VISIBLE);
+                    videoView.setVideoURI(Uri.parse(Tags.vedioUrl+playersModelList.get(pos).getPlayer_vedio()));
+                    videoView.start();
+                }
+            }else
+            {
+                if (TextUtils.isEmpty(playersModelList.get(pos).getPlayer_vedio()))
+                {
+                    Toast.makeText(this, "This video not available", Toast.LENGTH_SHORT).show();
+                }else
+                {
+                    videoView.setVideoURI(Uri.parse(Tags.vedioUrl+playersModelList.get(pos).getPlayer_vedio()));
+                    videoView.start();
+
+                }
+
+            }
+
+           /* tv_like.setVisibility(View.INVISIBLE);
             tv_dislike.setVisibility(View.INVISIBLE);
             tv_view.setVisibility(View.INVISIBLE);
             like.setVisibility(View.INVISIBLE);
-            dislike.setVisibility(View.INVISIBLE);
-        }else
-            {
-                currVideoPos = pos;
-                tv_like.setText(playersModelList.get(pos).getPlayer_vedio_like());
-                tv_dislike.setText(playersModelList.get(pos).getPlayer_vedio_dislike());
-                tv_view.setText(playersModelList.get(pos).getPlayer_vedio_view());
-
-                if (videoView.isPlaying())
-                {
-                    videoView.stopPlayback();
-                    if (TextUtils.isEmpty(playersModelList.get(pos).getPlayer_vedio()))
-                    {
-                        Toast.makeText(this, "This video not available", Toast.LENGTH_SHORT).show();
-                    }else
-                    {
-                        videoView.setVideoURI(Uri.parse(playersModelList.get(pos).getPlayer_vedio()));
-
-                    }
-                }else
-                {
-                    if (TextUtils.isEmpty(playersModelList.get(pos).getPlayer_vedio()))
-                    {
-                        Toast.makeText(this, "This video not available", Toast.LENGTH_SHORT).show();
-                    }else
-                    {
-                        videoView.setVideoURI(Uri.parse(playersModelList.get(pos).getPlayer_vedio()));
-
-                    }
-
-                }
-            }
+            dislike.setVisibility(View.INVISIBLE);*/
+        }
 
     }
 
@@ -235,8 +273,8 @@ public class PlayerVideosActivity extends AppCompatActivity {
                                 }
                                 else if (type.equals(Tags.viewer))
                                 {
-                                    int view  = Integer.parseInt(tv_view.getText().toString())+1;
-                                    tv_view.setText(String.valueOf(view));
+                                    int v  = Integer.parseInt(tv_view.getText().toString())+1;
+                                    tv_view.setText(String.valueOf(v));
                                 }
                             }else if (response.body().getSuccess()==0)
                             {
